@@ -1,0 +1,24 @@
+{
+  "name": "group17-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Group17-CNPM/Group17-Backend.git"
+  },
+  "author": "group 17",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Group17-CNPM/Group17-Backend/issues"
+  },
+  "homepage": "https://github.com/Group17-CNPM/Group17-Backend#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20"
+  }
+}
