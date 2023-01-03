@@ -1,6 +1,6 @@
 const express = require('express')
-// import { User } from "./model/login.js"
-var User = require('./model/login.js')
+// import { MyUser } from "./model/login.js"
+var MyUser = require('./model/login.js')
 var mysql = require('mysql')
 const app = express()
 const port = 3000
@@ -13,11 +13,13 @@ var connect = mysql.createConnection({
 })
 
 app.get('/', (req, res) => {
-    User.selectUser(req, res);
-    // res.json({
-    //     user: "alsj",
-    //     id: "ầ;sfk"
-    // });
+    // MyUser user = MyUser();
+    // MyUser.selectUser(req, res);
+    // User.selectUser(req, res);
+    res.json({
+        user: "alsj",
+        id: "ầ;sfk"
+    });
 })
 
 app.listen(port, () => {
