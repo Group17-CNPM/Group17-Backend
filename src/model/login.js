@@ -1,6 +1,6 @@
 var con = require("../index.js").connect;
 
-class User {
+class MyUser {
     constructor(id, username, password, email, role) {
         this.id = id;
         this.username = username;
@@ -8,7 +8,7 @@ class User {
         this.role = role;
     }
 
-    selectUser(req, res) {
+    static selectUser(req, res) {
         con.connect(function (err) {
             if (err) throw err;
             console.log("connected!");
@@ -20,4 +20,4 @@ class User {
     }
 }
 
-exports = User
+exports = MyUser 
