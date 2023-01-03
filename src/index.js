@@ -8,7 +8,7 @@ const port = 3000
 var connect = mysql.createConnection({
     host: "db4free.net",
     user: "quanlynhankhau",
-    password: "quanlynhankhau",
+    password: "quanlynhankhau",//cc
     database: "quanlynhankhau"
 })
 
