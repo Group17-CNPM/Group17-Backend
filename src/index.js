@@ -14,12 +14,12 @@ var connect = mysql.createConnection({
 
 app.get('/', (req, res) => {
     // MyUser user = MyUser();
-    // MyUser.selectUser(req, res);
+    MyUser.selectUser(req, res);
     // User.selectUser(req, res);
-    res.json({
-        user: "alsj",
-        id: "ầ;sfk"
-    });
+    // res.json({
+    //     user: "alsj",
+    //     id: "ầ;sfk"
+    // });
 })
 
 app.listen(port, () => {
