@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Group17-CNPM/Group17-Backend#readme",
   "dependencies": {
     "express": "^4.18.2",
+    "mysql": "^2.18.1",
     "nodemon": "^2.0.20"
   }
 }
