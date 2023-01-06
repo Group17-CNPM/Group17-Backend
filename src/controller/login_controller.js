@@ -1,6 +1,7 @@
 
-let { User, Login } = require('../model/login.js');
-let Response = require('../utils/response.js').Response
+let Login = require('../model/login.js').Login;
+let User = require('../model/user.js').User;
+let Response = require('../utils/response.js').Response;
 let CryptoJS = require('crypto-js');
 
 
@@ -16,7 +17,7 @@ class LoginController{
 		let username = req.query.username;
 		let password = req.query.password;
 
-		console.log(`Login username: ${username}, password: ${password}`);
+		// console.log(`Login username: ${username}, password: ${password}`);
 
 		if (username == undefined || password == undefined){
 			Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu tham số");
@@ -53,9 +54,38 @@ class LoginController{
 		});
 	}
 
-	async checkToken(req, res){
+	static async checkToken(req, res){
 		let token = req.query.token;
+		let username = null;
 		
+		if (token == undefined) {
+			Response.response(res, Response.ResponseCode.ERROR, "Lack of token", req.query);
+			return false;
+		} 
+
+		username = await Login.getUsernameByToken(token);
+		if (username == null) {
+			Response.response(res, Response.ResponseCode.ERROR, "Token is invalid", req.query);
+			return false;
+		}
+
+		req.username = username;
+		return true;
+	}
+
+	async logout(req, res){
+		let result = await LoginController.checkToken(req, res);
+		if (!result) return;
+
+		let token = req.query.token;
+		result = await Login.deleteToken(token);
+
+		if (result == null){
+			Response.response(res, Response.ResponseCode.ERROR, "Logout failed", req.query, "Đăng xuất thất bại");
+			return;
+		}
+
+		Response.response(res, Response.ResponseCode.OK, "Logout success", req.query, "Đăng xuất thành công");
 	}
 }
 

@@ -1,10 +1,9 @@
 
 class Nhankhau {
     constructor(
-    	id = null, 
+    	cccd = null, 	
     	sohokhau = null, 
     	quanhevoichuho = null, 
-    	cccd = null, 
     	role = null,
     	ngaycap = null,
     	noicap = null,
@@ -19,10 +18,9 @@ class Nhankhau {
     	ngaythemnhankhau = null,
     	ghichu = null
 	) { 
-    	this.id 					= id;
+		this.cccd 					= cccd;
 		this.sohokhau 				= sohokhau;
 		this.quanhevoichuho 		= quanhevoichuho;
-		this.cccd 					= cccd;
 		this.role 					= role;
 		this.ngaycap 				= ngaycap;
 		this.noicap 				= noicap;
@@ -39,10 +37,9 @@ class Nhankhau {
     }
     copy_from(user){
         if (user == null) return;
-        this.id 					= user.id;
+		this.cccd 					= user.cccd;
 		this.sohokhau 				= user.sohokhau;
 		this.quanhevoichuho 		= user.quanhevoichuho;
-		this.cccd 					= user.cccd;
 		this.role 					= user.role;
 		this.ngaycap 				= user.ngaycap;
 		this.noicap 				= user.noicap;
@@ -60,12 +57,11 @@ class Nhankhau {
     static fromJson(json){
         if (json == null) return;
         var user = new Nhankhau();
-        user.id 					= json.id;
+		user.cccd 					= json.cccd;
 		user.sohokhau 				= json.sohokhau;
 		user.quanhevoichuho 		= json.quanhevoichuho;
-		user.cccd 					= json.cccd;
 		user.role 					= json.role;
-		user.ngaycap 				= json.ngaycap;
+		user.ngaycap 				= json.capngay;
 		user.noicap 				= json.noicap;
 		user.hoten 					= json.hoten;
 		user.ngaysinh 				= json.ngaysinh;
