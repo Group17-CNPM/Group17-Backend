@@ -25,6 +25,7 @@ var local_database = {
 var connection = mysql.createConnection(host_database);
 // var connection = mysql.createConnection(local_database);
 
+console.log("Connecting to mysql host...");
 connection.connect(function(err){
     if (err) {
         console.log("Connect mysql failed!");
@@ -33,25 +34,24 @@ connection.connect(function(err){
     console.log("Connected to mysql on port 3306");
 
     connection.my_query = util.promisify(connection.query).bind(connection);
+
+    // routes
+    var router = new Router(app);
+    router.route();
+
+    app.get('/', (req, res) => {
+        res.send("Welcome to QUANLYNHANKHAU Nhập môn Công nghệ phần mềm");
+    });
+
+
+
+    // run server
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+        
+    });
 });
 
-
-
-// routes
-var router = new Router(app);
-router.route();
-
-app.get('/', (req, res) => {
-    res.send("Welcome to QUANLYNHANKHAU Nhập môn Công nghệ phần mềm");
-});
-
-
-
-// run server
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-    console.log("Connecting to mysql host...");
-});
 
 module.exports = { app, connection };
 
