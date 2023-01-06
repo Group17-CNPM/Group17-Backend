@@ -54,6 +54,20 @@ class LoginController{
 		});
 	}
 
+	async checkToken(req, res){
+		let result = await LoginController.checkToken(req, res);
+		if (!result) return;
+		
+		let username = req.username;
+		let user = await User.getUserByUsername(username);
+		if (user == null) {
+			Response.response(res, Response.ResponseCode.ERROR, "Token is expired", req.query);
+			return;
+		}
+		
+		Response.response(res, Response.ResponseCode.OK, "Token is valid", user);
+	}
+
 	static async checkToken(req, res){
 		let token = req.query.token;
 		let username = null;

@@ -19,6 +19,11 @@ class Router{
 				let loginController = new LoginController();
 				loginController.logout(req, res);
 			});
+		this.app.route("/checkToken")
+			.get(function(req, res){
+				let loginController = new LoginController();
+				loginController.checkToken(req, res);
+			});
 		this.app.route("/register")
 			.get(function(req, res){
 				let userController = new UserController();
