@@ -12,34 +12,49 @@ class LoginController{
 		return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
 	}
 
-	login(req, res){
+	async login(req, res){
 		let username = req.query.username;
 		let password = req.query.password;
 
-		User.getUserByUsername(username, function(result){
-			if (result == null){
-				Response.response(res, Response.ResponseCode.ERROR, "Account is not exist", req.query);
-				return;
-			}
-			if (password != result.password){
-				Response.response(res, Response.ResponseCode.ERROR, "Mật khẩu không đúng", {
-					username: username
-				});
-				return;
-			}
-			let time = LoginController.getCurrentStringTime();
-			let token = String(CryptoJS.MD5(`${username}${password}${time}`));
-			Login.insert(token, username, time, function(result){
-				Response.response(res, Response.ResponseCode.OK, "Đăng nhập thành công", {
-					username: username,
-					token: token
-				});
-				return;
+		console.log(`Login username: ${username}, password: ${password}`);
+
+		if (username == undefined || password == undefined){
+			Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu tham số");
+			return;
+		}
+
+		var result = await User.getUserByUsername(username);
+		if (result == null){
+			Response.response(res, Response.ResponseCode.ERROR, "Account is not exist", req.query);
+			return;
+		}
+		if (password != result.password){
+			Response.response(res, Response.ResponseCode.ERROR, "Mật khẩu không đúng", {
+				username: username
 			});
+			return;
+		}
+
+		let time = LoginController.getCurrentStringTime();
+		let token = String(CryptoJS.MD5(`${username}${password}${time}`));
+		
+		result = await Login.insert(token, username, time);
+		
+		if (result == null){
+			Response.response(res, Response.ResponseCode.OK, "Đăng nhập thất bại", {
+				username: username
+			});
+			return;
+		}
+
+		Response.response(res, Response.ResponseCode.OK, "Đăng nhập thành công", {
+			username: username,
+			token: token
 		});
 	}
 
-	checkToken(req, res){
+	async checkToken(req, res){
+		let token = req.query.token;
 		
 	}
 }

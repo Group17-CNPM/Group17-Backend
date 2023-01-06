@@ -2,7 +2,8 @@
 // declare variables
 const express = require('express');
 const app = express();
-var mysql = require('mysql');
+const util = require('util');
+const mysql = require('mysql');
 const { Router } = require('./router/router.js');
 const port = 3000;
 
@@ -30,6 +31,8 @@ connection.connect(function(err){
         return;
     }
     console.log("Connected to mysql on port 3306");
+
+    connection.my_query = util.promisify(connection.query).bind(connection);
 });
 
 

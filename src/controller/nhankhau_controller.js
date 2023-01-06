@@ -5,10 +5,11 @@ let Response = require('../utils/response.js').Response;
 class NhankhauController{
 	constructor(){}
 
-	getListNhankhau(req, res){
-		Nhankhau.selectAll(function(listNhankhau){
-			Response.response(res, Response.ResponseCode.OK, "Success", listNhankhau);
-		});
+	async getListNhankhau(req, res){
+		let listNhankhau = await Nhankhau.selectAll();
+
+		Response.response(res, Response.ResponseCode.OK, "Success", listNhankhau);
+	
 	}
 
 }

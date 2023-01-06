@@ -81,17 +81,23 @@ class Nhankhau {
     }
 
 
-    static selectAll(callback = null) {
+    static async selectAll() {
         var connection = require('../index.js').connection;
-        connection.query("SELECT * FROM nhankhau", function (err, result) {
-            if (err) throw err;
-            let listNhankhau = [];
-            result.forEach(function(element){
-                listNhankhau.push(Nhankhau.fromJson(element));
-            });
-            
-            if (callback != null) callback(listNhankhau);
+        var result;
+        
+        try {
+        	let query = `SELECT * FROM nhankhau`;
+        	result = await connection.my_query(query);
+        } catch (err){
+        	console.log(err);
+        }
+
+        let listNhankhau = [];
+        result.forEach(function(element){
+            listNhankhau.push(Nhankhau.fromJson(element));
         });
+        
+        return listNhankhau;
     }
     
 }

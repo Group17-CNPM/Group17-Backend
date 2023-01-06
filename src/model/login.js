@@ -28,28 +28,38 @@ class User {
     }
 
 
-    static selectUser(callback = null) {
+    static async selectUser() {
         var connection = require('../index.js').connection;
-        connection.query("SELECT * FROM users", function (err, result) {
-            if (err) throw err;
-            let listUser = [];
-            result.forEach(function(element){
-                listUser.push(User.fromJson(element));
-            });
-            
-            if (callback != null) callback(listUser);
+        var result, query = "SELECT * FROM users";
+
+        try {
+            result = await connection.my_query(query);
+        } catch(err){
+            console.log(err);
+        }
+
+        let listUser = [];
+        result.forEach(function(element){
+            listUser.push(User.fromJson(element));
         });
+        
+        return listUser;
     }
 
-    static getUserByUsername(username, callback = null){
+    static async getUserByUsername(username){
         var connection = require('../index.js').connection;
-        connection.query(`SELECT * FROM users WHERE username = '${username}'`, function (err, result) {
-            if (err) throw err;
-            let user = null;
-            if (result.length > 0) user = User.fromJson(result[0]);
-            
-            if (callback != null) callback(user);
-        });
+
+        var result, query = `SELECT * FROM users WHERE username = '${username}'`;
+        try {
+            result = await connection.my_query(query);
+        } catch(err){
+            console.log(err);
+        }
+
+        let user = null;
+        if (result.length > 0) user = User.fromJson(result[0]);
+        
+        return user;
     }
     
 }
@@ -57,13 +67,19 @@ class User {
 class Login{
     Login(){}
 
-    static insert(token, username, time, callback = null){
+    static async insert(token, username, time){
         var connection = require('../index.js').connection;
+
+        var result;
         let query = `INSERT INTO login VALUE('${token}', null, '${username}', '${time}');`;
-        connection.query(query, function (err, result) {
-            if (err) throw err;
-            if (callback != null) callback(result);
-        });
+
+        try {
+            result = await connection.my_query(query);
+        } catch(err){
+            console.log(err);
+        }
+        
+        return result;
     }
 
     static checkToken(token, callback = null){
