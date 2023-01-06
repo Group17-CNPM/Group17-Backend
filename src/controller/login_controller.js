@@ -39,8 +39,8 @@ class LoginController{
 		});
 	}
 
-	checkToken(token){
-
+	checkToken(req, res){
+		
 	}
 }
 
