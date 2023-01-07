@@ -146,7 +146,6 @@ class UserController{
 	}
 	*/
 	async updateUser(req, res){
-		console.log("call update");
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
@@ -235,7 +234,7 @@ class UserController{
 		}
 
 		let result1 = await User.updatePassword(username, password);
-		if (result == null){
+		if (result1 == null){
 			Response.response(res, Response.ResponseCode.ERROR, "Change password failed", req.query);
 			return;
 		}
@@ -254,7 +253,7 @@ class UserController{
 	*/
 	async cancelUser(req, res){
 		// checkToken:
-		let result = await Login.checkToken(req, res);
+		let result = await LoginController.checkToken(req, res);
 		if (!result) return;
 
 		// check params

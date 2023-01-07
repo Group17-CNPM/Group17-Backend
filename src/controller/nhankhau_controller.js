@@ -6,7 +6,15 @@ let LoginController = require('../controller/login_controller.js').LoginControll
 class NhankhauController{
 	constructor(){}
 
+
+	/*
+	route: GET [domain]/getListNhankhau
+	query: {
+		token: "xxx"
+	}
+	*/
 	async getListNhankhau(req, res){
+		// check token
 		let result = await LoginController.checkToken(req, res);
 		if (!result) return;
 
@@ -14,7 +22,6 @@ class NhankhauController{
 		let listNhankhau = await Nhankhau.selectAll();
 
 		Response.response(res, Response.ResponseCode.OK, "Success", listNhankhau);
-	
 	}
 
 }

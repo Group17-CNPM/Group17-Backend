@@ -15,18 +15,20 @@ class UserRouter{
 			});
 		this.app.route("/deleteUser")
 			.get(function(req, res){
+				console.log("call delete");
 				let userController = new UserController();
 				userController.deleteUser(req, res);
 			});
 		this.app.route("/updateUser")
 			.get(function(req, res){
+				console.log("call update");
 				let userController = new UserController();
-				userController.deleteUser(req, res);
+				userController.updateUser(req, res);
 			});
 		this.app.route("/changePassword")
 			.get(function(req, res){
 				let userController = new UserController();
-				userController.deleteUser(req, res);
+				userController.changePassword(req, res);
 			});
 		this.app.route("/cancelUser")
 			.get(function(req, res){
