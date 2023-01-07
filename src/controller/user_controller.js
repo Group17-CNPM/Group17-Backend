@@ -1,5 +1,6 @@
 
 let User = require('../model/user.js').User;
+let LoginController = require('../controller/login_controller.js').LoginController;
 let Response = require('../utils/response.js').Response
 
 class UserController{
@@ -24,9 +25,20 @@ class UserController{
 	}
 
 	async createUser(req, res){
-		let { username, password, email, role } = req.query;
+		// chỉ ban quản lý mới có thể tạo được user mới
+		let okay = await LoginController.checkToken(req, res);
+		if (!okay) return;
+
+		let { token, username, password, email, role } = req.query;
 		if (username == undefined || password == undefined || email == undefined || role == undefined){
 			Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu tham số");
+			return;
+		}
+
+		let curUsername = req.username;
+		let curUser = await User.getUserByUsername(curUsername);
+		if (curUser == null || curUser.role != "1"){
+			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Chỉ Ban quản lý mới có thể tạo tài khoản mới");
 			return;
 		}
 

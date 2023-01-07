@@ -24,12 +24,12 @@ class LoginController{
 			return;
 		}
 
-		var result = await User.getUserByUsername(username);
-		if (result == null){
+		var user = await User.getUserByUsername(username);
+		if (user == null){
 			Response.response(res, Response.ResponseCode.ERROR, "Account is not exist", req.query);
 			return;
 		}
-		if (password != result.password){
+		if (password != user.password){
 			Response.response(res, Response.ResponseCode.ERROR, "Mật khẩu không đúng", {
 				username: username
 			});
@@ -39,7 +39,7 @@ class LoginController{
 		let time = LoginController.getCurrentStringTime();
 		let token = String(CryptoJS.MD5(`${username}${password}${time}`));
 		
-		result = await Login.insert(token, username, time);
+		let result = await Login.insert(token, username, time);
 		
 		if (result == null){
 			Response.response(res, Response.ResponseCode.OK, "Đăng nhập thất bại", {
@@ -49,7 +49,11 @@ class LoginController{
 		}
 
 		Response.response(res, Response.ResponseCode.OK, "Đăng nhập thành công", {
-			username: username,
+			user: {
+				username: username,
+				email: user.email,
+				role: user.role
+			},
 			token: token
 		});
 	}
