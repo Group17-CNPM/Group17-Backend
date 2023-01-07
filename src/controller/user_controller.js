@@ -1,5 +1,6 @@
 
 let User = require('../model/user.js').User;
+let Login = require('../model/login.js').Login;
 let LoginController = require('../controller/login_controller.js').LoginController;
 let Response = require('../utils/response.js').Response
 
@@ -37,16 +38,18 @@ class UserController{
 	}
 	*/
 	async createUser(req, res){
-		// chỉ ban quản lý mới có thể tạo được user mới
+		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
+		// check params 
 		let { token, username, password, email, role } = req.query;
 		if (username == undefined || password == undefined || email == undefined || role == undefined){
 			Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu tham số");
 			return;
 		}
 
+		// chỉ ban quản lý mới có thể tạo được user mới
 		let curUsername = req.username;
 		let curUser = await User.getUserByUsername(curUsername);
 		if (curUser == null || curUser.role != "1"){
@@ -54,6 +57,7 @@ class UserController{
 			return;
 		}
 
+		// check fields is valid
 		if (!this.checkUsername(username)){
 			Response.response(res, Response.ResponseCode.ERROR, "Username is invalid", req.query);
 			return;
@@ -67,10 +71,11 @@ class UserController{
 			return;
 		}
 		if (!this.checkRole(role)){
-			Response.response(res, Response.ResponseCode.ERROR, "Role is invalid (1: Ban quản lý, 2: Kế toán)", req.query);
+			Response.response(res, Response.ResponseCode.ERROR, "Role is invalid", req.query, "1: Ban quản lý, 2: Kế toán");
 			return;
 		}
 		
+		// check account existed
 		let user = await User.getUserByUsername(username);
 		if (user != null){
 			Response.response(res, Response.ResponseCode.ERROR, "Account is existed", req.query);
@@ -95,158 +100,159 @@ class UserController{
 	}
 	*/
 	async deleteUser(req, res){
+		// check token
+		let okay = await LoginController.checkToken(req, res);
+		if (!okay) return;
+
+		// check params
+		let { token, username, password, email, role } = req.query;
+		if (username == undefined){
+			Response.response(res, Response.ResponseCode.ERROR, "Lack of username", req.query, "Thiếu username");
+			return;
+		}
+
 		// chỉ ban quản lý mới có thể xóa được user
+		let curUsername = req.username;
+		let curUser = await User.getUserByUsername(curUsername);
+		if (curUser == null || curUser.role != "1"){
+			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Chỉ Ban quản lý thực hiện được hành động này");
+			return;
+		}
+
 		// chỉ có thể xóa user có vai trò là Kế toán
-		let okay = await LoginController.checkToken(req, res);
-		if (!okay) return;
-
-		let { token, username, password, email, role } = req.query;
-		if (username == undefined || password == undefined || email == undefined || role == undefined){
-			Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu tham số");
+		let targetUser = await User.getUserByUsername(username);
+		if (curUser == null || curUser.role == "1"){
+			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Không thể xóa tài khoản này");
 			return;
 		}
 
-		let curUsername = req.username;
-		let curUser = await User.getUserByUsername(curUsername);
-		if (curUser == null || curUser.role != "1"){
-			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Chỉ Ban quản lý mới có thể tạo tài khoản mới");
-			return;
-		}
-
-		if (!this.checkUsername(username)){
-			Response.response(res, Response.ResponseCode.ERROR, "Username is invalid", req.query);
-			return;
-		}
-		if (!this.checkPassword(password)){
-			Response.response(res, Response.ResponseCode.ERROR, "Password is invalid", req.query);
-			return;
-		}
-		if (!this.checkEmail(email)){
-			Response.response(res, Response.ResponseCode.ERROR, "Email is invalid", req.query);
-			return;
-		}
-		if (!this.checkRole(role)){
-			Response.response(res, Response.ResponseCode.ERROR, "Role is invalid (1: Ban quản lý, 2: Kế toán)", req.query);
-			return;
-		}
-		
-		let user = await User.getUserByUsername(username);
-		if (user != null){
-			Response.response(res, Response.ResponseCode.ERROR, "Account is existed", req.query);
-			return;
-		}
-
-		let result = await User.insertUser(username, password, email, role);
+		let result = await User.deleteUser(username);
 		if (result == null){
-			Response.response(res, Response.ResponseCode.ERROR, "Register failed", req.query);
+			Response.response(res, Response.ResponseCode.ERROR, "Delete failed", req.query);
 			return;
 		}
 
-		Response.response(res, Response.ResponseCode.OK, "Register success", req.query);
+		Response.response(res, Response.ResponseCode.OK, "Delete success", req.query, "Đã xóa tài khoản này");
 	}
 
+
+	/*
+	route: GET [domain]/updateUser
+	query: {
+		token: "xxx",
+		username: "admin",
+		email: "email",
+		role: "2"
+	}
+	*/
 	async updateUser(req, res){
-		// chỉ ban quản lý mới có thể tạo được user mới
+		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
-		let { token, username, password, email, role } = req.query;
-		if (username == undefined || password == undefined || email == undefined || role == undefined){
+		// check params
+		let { token, username, email, role } = req.query;
+		if (username == undefined || email == undefined || role == undefined){
 			Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu tham số");
 			return;
 		}
 
+		// Chỉ Ban quản lý mới đổi được thông tin tài khoản
 		let curUsername = req.username;
 		let curUser = await User.getUserByUsername(curUsername);
 		if (curUser == null || curUser.role != "1"){
-			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Chỉ Ban quản lý mới có thể tạo tài khoản mới");
+			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Chỉ Ban quản lý thực hiện được");
 			return;
 		}
 
-		if (!this.checkUsername(username)){
-			Response.response(res, Response.ResponseCode.ERROR, "Username is invalid", req.query);
+		// Chỉ có thể đổi thông tin tài khoản cho tài khoản của mình hoặc Kế toán
+		let targetUser = await User.getUserByUsername(username);
+		if (targetUser == null || (targetUser.username != curUser.username && targetUser.role == "1")){
+			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Không đổi thông tin được cho tài khoản này");
 			return;
 		}
-		if (!this.checkPassword(password)){
-			Response.response(res, Response.ResponseCode.ERROR, "Password is invalid", req.query);
-			return;
-		}
+
+		// check fields is valid
 		if (!this.checkEmail(email)){
 			Response.response(res, Response.ResponseCode.ERROR, "Email is invalid", req.query);
 			return;
 		}
 		if (!this.checkRole(role)){
-			Response.response(res, Response.ResponseCode.ERROR, "Role is invalid (1: Ban quản lý, 2: Kế toán)", req.query);
-			return;
-		}
-		
-		let user = await User.getUserByUsername(username);
-		if (user != null){
-			Response.response(res, Response.ResponseCode.ERROR, "Account is existed", req.query);
+			Response.response(res, Response.ResponseCode.ERROR, "Role is invalid", req.query, "1: Ban quản lý, 2: Kế toán");
 			return;
 		}
 
-		let result = await User.insertUser(username, password, email, role);
+		let result = await User.updateUser(username, email, role);
 		if (result == null){
-			Response.response(res, Response.ResponseCode.ERROR, "Register failed", req.query);
+			Response.response(res, Response.ResponseCode.ERROR, "Change infor failed", req.query);
 			return;
 		}
 
-		Response.response(res, Response.ResponseCode.OK, "Register success", req.query);
+		Response.response(res, Response.ResponseCode.OK, "Change infor success", req.query);
 	}
 
+
+	/*
+	route: GET [domain]/changePassword
+	query: {
+		token: "xxx",
+		username: "admin",
+		password: "password"
+	}
+	*/
 	async changePassword(req, res){
-		// chỉ ban quản lý mới có thể tạo được user mới
+		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
-		let { token, username, password, email, role } = req.query;
-		if (username == undefined || password == undefined || email == undefined || role == undefined){
+		// check params
+		let { token, username, password } = req.query;
+		if (username == undefined || password == undefined){
 			Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu tham số");
 			return;
 		}
 
+		// Chỉ Ban quản lý mới đổi được mật khẩu
 		let curUsername = req.username;
 		let curUser = await User.getUserByUsername(curUsername);
 		if (curUser == null || curUser.role != "1"){
-			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Chỉ Ban quản lý mới có thể tạo tài khoản mới");
+			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Chỉ Ban quản lý thực hiện được");
 			return;
 		}
 
-		if (!this.checkUsername(username)){
-			Response.response(res, Response.ResponseCode.ERROR, "Username is invalid", req.query);
+		// Chỉ có thể đổi mật khẩu cho tài khoản của mình hoặc Kế toán
+		let targetUser = await User.getUserByUsername(username);
+		if (targetUser == null || (targetUser.username != curUser.username && targetUser.role == "1")){
+			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Không đổi mật khẩu được cho tài khoản này");
 			return;
 		}
+
+		// check password is valid
 		if (!this.checkPassword(password)){
 			Response.response(res, Response.ResponseCode.ERROR, "Password is invalid", req.query);
 			return;
 		}
-		if (!this.checkEmail(email)){
-			Response.response(res, Response.ResponseCode.ERROR, "Email is invalid", req.query);
-			return;
-		}
-		if (!this.checkRole(role)){
-			Response.response(res, Response.ResponseCode.ERROR, "Role is invalid (1: Ban quản lý, 2: Kế toán)", req.query);
-			return;
-		}
-		
-		let user = await User.getUserByUsername(username);
-		if (user != null){
-			Response.response(res, Response.ResponseCode.ERROR, "Account is existed", req.query);
-			return;
-		}
 
-		let result = await User.insertUser(username, password, email, role);
+		let result1 = await User.updatePassword(username, password);
 		if (result == null){
-			Response.response(res, Response.ResponseCode.ERROR, "Register failed", req.query);
+			Response.response(res, Response.ResponseCode.ERROR, "Change password failed", req.query);
 			return;
 		}
 
-		Response.response(res, Response.ResponseCode.OK, "Register success", req.query);
+		Response.response(res, Response.ResponseCode.OK, "Change password success", req.query);
+		Login.logout(username);
 	}
 
+
+	/*
+	route: GET [domain]/cancelUser
+	query: {
+		token: "xxx",
+		password: "password"
+	}
+	*/
 	static async cancelUser(req, res){
-		
+		// Chỉ ban quản lý mới có thể tự hủy tài khoản của mình
 	}
 }
 

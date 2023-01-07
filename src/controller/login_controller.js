@@ -105,6 +105,10 @@ class LoginController{
 
 		Response.response(res, Response.ResponseCode.OK, "Logout success", req.query, "Đăng xuất thành công");
 	}
+
+	async logoutAllDevice(req, res){
+		
+	}
 }
 
 module.exports = { LoginController };

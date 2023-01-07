@@ -17,6 +17,11 @@ class LoginRouter{
 				let loginController = new LoginController();
 				loginController.logout(req, res);
 			});
+		this.app.route("/logoutAllDevice")
+			.get(function(req, res){
+				let loginController = new LoginController();
+				loginController.logoutAllDevice(req, res);
+			});
 		this.app.route("/checkToken")
 			.get(function(req, res){
 				let loginController = new LoginController();

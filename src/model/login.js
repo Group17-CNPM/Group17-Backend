@@ -50,6 +50,21 @@ class Login{
 
         return result;
     }
+
+    static async logout(username){
+        var connection = require('../index.js').connection;
+
+        var result;
+        let query = `DELETE FROM login WHERE username = '${username}'`;
+
+        try {
+            result = await connection.my_query(query);
+        } catch(err){
+            console.log(err);
+        }
+
+        return result;
+    }
 }
 
 
