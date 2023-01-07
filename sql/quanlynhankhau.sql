@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1:3306
--- Thời gian đã tạo: Th1 06, 2023 lúc 05:25 PM
+-- Thời gian đã tạo: Th1 07, 2023 lúc 07:36 PM
 -- Phiên bản máy phục vụ: 8.0.31
 -- Phiên bản PHP: 7.4.3
 
@@ -44,7 +44,7 @@ CREATE TABLE `danhsachnopphi` (
 
 CREATE TABLE `hokhau` (
   `sohokhau` int NOT NULL,
-  `cccdchuho` varchar(255) NOT NULL,
+  `idchuho` int NOT NULL,
   `sonha` varchar(255) NOT NULL,
   `duong` varchar(255) NOT NULL,
   `phuong` varchar(255) NOT NULL,
@@ -56,8 +56,8 @@ CREATE TABLE `hokhau` (
 -- Đang đổ dữ liệu cho bảng `hokhau`
 --
 
-INSERT INTO `hokhau` (`sohokhau`, `cccdchuho`, `sonha`, `duong`, `phuong`, `quan`, `ngaylamhokhau`) VALUES
-(1, '12345678910', '123', '113', 'Bách Khoa', 'Hai Bà Tưng', '2022-12-01');
+INSERT INTO `hokhau` (`sohokhau`, `idchuho`, `sonha`, `duong`, `phuong`, `quan`, `ngaylamhokhau`) VALUES
+(1, 1, '123', '113', 'Bách Khoa', 'Hai Bà Tưng', '2022-12-01');
 
 -- --------------------------------------------------------
 
@@ -83,7 +83,7 @@ CREATE TABLE `khoanthu` (
 CREATE TABLE `lichsu` (
   `id` int NOT NULL,
   `sohokhau` int NOT NULL,
-  `cccd` varchar(255) NOT NULL,
+  `idnhankhau` int NOT NULL,
   `loaithaydoi` varchar(255) NOT NULL,
   `thoigian` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -106,11 +106,13 @@ CREATE TABLE `login` (
 --
 
 INSERT INTO `login` (`token`, `deviceid`, `username`, `time`) VALUES
-('4b3219d81f61d2a429f73ed3a35d1011', NULL, 'admin', '2023-01-06 14:44:00'),
-('5ff771b4238c536bce77b50ee25a3302', NULL, 'admin', '2023-01-05 22:48:45'),
-('6ba492312512bf77c99edb6b26f4bca6', NULL, 'admin', '2023-01-06 14:43:12'),
-('9cab06b7372af6c59ac8884becf8d65a', NULL, 'admin', '2023-01-06 14:43:32'),
-('e05b45c7c3a3f50372ec8d77abb22064', NULL, 'admin', '2023-01-06 15:18:33');
+('18a35037377897f77f9e9645457fbdba', NULL, 'admin', '2023-01-07 10:12:25'),
+('24aeafccb23efe8bdba357e813deb984', NULL, 'admin', '2023-01-07 23:02:51'),
+('431b923d6d803dc0d954ad8f5fbdf7cc', NULL, 'admin', '2023-01-07 14:37:59'),
+('7f3dd2ebe62fc70f51c4a8044bd2d503', NULL, 'admin', '2023-01-07 16:02:36'),
+('b8feee21eef244ceec6e8e3989d96744', NULL, 'admin', '2023-01-07 17:05:22'),
+('c1b530d89ea0c68c7af44c62069ae695', NULL, 'admin', '2023-01-07 17:08:58'),
+('f7c0ca95abb0679987609c17aa72f412', NULL, 'admin', '2023-01-07 10:59:56');
 
 -- --------------------------------------------------------
 
@@ -119,29 +121,31 @@ INSERT INTO `login` (`token`, `deviceid`, `username`, `time`) VALUES
 --
 
 CREATE TABLE `nhankhau` (
-  `cccd` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `sohokhau` int DEFAULT NULL,
-  `quanhevoichuho` varchar(255) NOT NULL,
-  `capngay` date NOT NULL,
-  `noicap` varchar(255) NOT NULL,
-  `hoten` varchar(255) NOT NULL,
+  `id` int NOT NULL,
+  `hoten` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `ngaysinh` date NOT NULL,
   `gioitinh` tinyint(1) NOT NULL,
-  `quequan` varchar(255) NOT NULL,
-  `dantoc` varchar(255) NOT NULL,
-  `tongiao` varchar(255) NOT NULL,
-  `nghenghiep` varchar(255) NOT NULL,
-  `ngaydangkythuongtru` date NOT NULL,
-  `ngaythemnhankhau` date NOT NULL,
-  `ghichu` varchar(255) NOT NULL
+  `quequan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `dantoc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `tongiao` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `sohokhau` int DEFAULT NULL,
+  `quanhevoichuho` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `cccd` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `capngay` date DEFAULT NULL,
+  `noicap` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `nghenghiep` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `ngaydangkythuongtru` date DEFAULT NULL,
+  `ngaythemnhankhau` date DEFAULT NULL,
+  `ghichu` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `nhankhau`
 --
 
-INSERT INTO `nhankhau` (`cccd`, `sohokhau`, `quanhevoichuho`, `capngay`, `noicap`, `hoten`, `ngaysinh`, `gioitinh`, `quequan`, `dantoc`, `tongiao`, `nghenghiep`, `ngaydangkythuongtru`, `ngaythemnhankhau`, `ghichu`) VALUES
-('12345678910', NULL, 'Là chủ hộ', '2022-12-01', 'Bách Khoa Hà Nội', 'Trần Văn Phúc', '2001-04-22', 1, 'Hưng Yên', 'Kinh', 'Không', 'Sinh viên', '2022-12-01', '2022-12-01', '');
+INSERT INTO `nhankhau` (`id`, `hoten`, `ngaysinh`, `gioitinh`, `quequan`, `dantoc`, `tongiao`, `sohokhau`, `quanhevoichuho`, `cccd`, `capngay`, `noicap`, `nghenghiep`, `ngaydangkythuongtru`, `ngaythemnhankhau`, `ghichu`) VALUES
+(1, 'Trần Văn Phúc batoong', '2001-04-22', 1, 'Hưng Yên', 'Kinh', 'Không', NULL, 'Là chủ hộ', '12345678910', '2022-12-01', 'Bách Khoa Hà Nội', 'Sinh viên', '2022-12-01', '2022-12-01', 'Okay'),
+(4, 'Trịnh Đức Tiệp', '2001-11-11', 1, 'Nam Định', 'Becgie', 'Tin lành', 1, 'Là con', '12345678912', '2022-12-20', 'Công an tỉnh Nam Định', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -151,7 +155,7 @@ INSERT INTO `nhankhau` (`cccd`, `sohokhau`, `quanhevoichuho`, `capngay`, `noicap
 
 CREATE TABLE `tamtrutamvang` (
   `id` int NOT NULL,
-  `cccd` varchar(255) NOT NULL,
+  `idnhankhau` int NOT NULL,
   `trangthai` varchar(255) NOT NULL,
   `diachitamtru` varchar(255) NOT NULL,
   `diachitamchutamvang` varchar(255) NOT NULL,
@@ -168,7 +172,7 @@ CREATE TABLE `users` (
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `vaitro` varchar(255) NOT NULL
+  `vaitro` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '1: Ban quản lý, 2: Kế toán'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -176,7 +180,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`username`, `password`, `email`, `vaitro`) VALUES
-('admin', 'admin', 'tranphuc8a@gmail.com', 'banquanly');
+('admin', 'admin', 'tranphuc8a@gmail.com', '2');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -195,7 +199,7 @@ ALTER TABLE `danhsachnopphi`
 --
 ALTER TABLE `hokhau`
   ADD PRIMARY KEY (`sohokhau`),
-  ADD KEY `hokhau_fk0` (`cccdchuho`);
+  ADD KEY `idchuho` (`idchuho`);
 
 --
 -- Chỉ mục cho bảng `khoanthu`
@@ -209,7 +213,7 @@ ALTER TABLE `khoanthu`
 ALTER TABLE `lichsu`
   ADD PRIMARY KEY (`id`),
   ADD KEY `lichsu_fk0` (`sohokhau`),
-  ADD KEY `lichsu_fk1` (`cccd`);
+  ADD KEY `idnhankhau` (`idnhankhau`);
 
 --
 -- Chỉ mục cho bảng `login`
@@ -222,7 +226,7 @@ ALTER TABLE `login`
 -- Chỉ mục cho bảng `nhankhau`
 --
 ALTER TABLE `nhankhau`
-  ADD PRIMARY KEY (`cccd`),
+  ADD PRIMARY KEY (`id`),
   ADD KEY `nhankhau_fk0` (`sohokhau`);
 
 --
@@ -230,7 +234,7 @@ ALTER TABLE `nhankhau`
 --
 ALTER TABLE `tamtrutamvang`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `tamtrutamvang_fk0` (`cccd`);
+  ADD KEY `idnhankhau` (`idnhankhau`);
 
 --
 -- Chỉ mục cho bảng `users`
@@ -261,6 +265,12 @@ ALTER TABLE `lichsu`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT cho bảng `nhankhau`
+--
+ALTER TABLE `nhankhau`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT cho bảng `tamtrutamvang`
 --
 ALTER TABLE `tamtrutamvang`
@@ -281,14 +291,14 @@ ALTER TABLE `danhsachnopphi`
 -- Các ràng buộc cho bảng `hokhau`
 --
 ALTER TABLE `hokhau`
-  ADD CONSTRAINT `hokhau_fk0` FOREIGN KEY (`cccdchuho`) REFERENCES `nhankhau` (`cccd`);
+  ADD CONSTRAINT `hokhau_ibfk_1` FOREIGN KEY (`idchuho`) REFERENCES `nhankhau` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Các ràng buộc cho bảng `lichsu`
 --
 ALTER TABLE `lichsu`
   ADD CONSTRAINT `lichsu_fk0` FOREIGN KEY (`sohokhau`) REFERENCES `hokhau` (`sohokhau`),
-  ADD CONSTRAINT `lichsu_fk1` FOREIGN KEY (`cccd`) REFERENCES `nhankhau` (`cccd`);
+  ADD CONSTRAINT `lichsu_ibfk_1` FOREIGN KEY (`idnhankhau`) REFERENCES `nhankhau` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Các ràng buộc cho bảng `login`
@@ -306,7 +316,7 @@ ALTER TABLE `nhankhau`
 -- Các ràng buộc cho bảng `tamtrutamvang`
 --
 ALTER TABLE `tamtrutamvang`
-  ADD CONSTRAINT `tamtrutamvang_fk0` FOREIGN KEY (`cccd`) REFERENCES `nhankhau` (`cccd`);
+  ADD CONSTRAINT `tamtrutamvang_ibfk_1` FOREIGN KEY (`idnhankhau`) REFERENCES `nhankhau` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
