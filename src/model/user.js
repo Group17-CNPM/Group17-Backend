@@ -1,4 +1,4 @@
-
+let Login = require('./login.js').Login;
 
 class User {
     constructor(username = null, password = null, email = null, role = null) {
@@ -75,9 +75,13 @@ class User {
     static async deleteUser(username){
     	var connection = require('../index.js').connection;
 
-        var result, query = `DELETE FROM users WHERE username = '${username}';`;
+        var result;
+        let query1 = `DELETE FROM login WHERE username = '${username}'`;
+        let query2 = `DELETE FROM users WHERE username = '${username}';`;
         try {
-            result = await connection.my_query(query);
+            let result1 = await connection.my_query(query1)
+            let result2 = await connection.my_query(query2);
+            result = result1 && result2;
         } catch(err){
             console.log(err);
         }

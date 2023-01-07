@@ -28,7 +28,7 @@ class UserController{
 
 	
 	/*
-	route: GET [domain]/createUser
+	route: GET [domain]/register
 	query: {
 		token: "xxx",
 		username: "admin",
@@ -121,7 +121,7 @@ class UserController{
 
 		// chỉ có thể xóa user có vai trò là Kế toán
 		let targetUser = await User.getUserByUsername(username);
-		if (curUser == null || curUser.role == "1"){
+		if (targetUser == null || targetUser.role == "1"){
 			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Không thể xóa tài khoản này");
 			return;
 		}
@@ -146,6 +146,7 @@ class UserController{
 	}
 	*/
 	async updateUser(req, res){
+		console.log("call update");
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
@@ -251,8 +252,39 @@ class UserController{
 		password: "password"
 	}
 	*/
-	static async cancelUser(req, res){
+	async cancelUser(req, res){
+		// checkToken:
+		let result = await Login.checkToken(req, res);
+		if (!result) return;
+
+		// check params
+		let {token, password} = req.query;
+		if (password == undefined) {
+			Response.response(res, Response.ResponseCode.ERROR, "Lack of password", req.query, "Thiếu mật khẩu");
+			return;
+		}
+
 		// Chỉ ban quản lý mới có thể tự hủy tài khoản của mình
+		let curUsername = req.username;
+		let curUser = await User.getUserByUsername(curUsername);
+		if (curUser == null || curUser.role != "1"){
+			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Chỉ Ban quản lý thực hiện được");
+			return;
+		}
+
+		// check password
+		if (password != curUser.password){
+			Response.response(res, Response.ResponseCode.ERROR, "Password is wrong", req.query, "Mật khẩu sai");
+			return;
+		}
+
+		result = await User.deleteUser(curUsername);
+		if (result == null){
+			Response.response(res, Response.ResponseCode.ERROR, "cancel user failed", req.query, "Hủy tài khoản thất bại");
+			return;
+		}
+
+		Response.response(res, Response.ResponseCode.ERROR, "cancel user success", req.query, "Hủy tài khoản thành công");
 	}
 }
 
