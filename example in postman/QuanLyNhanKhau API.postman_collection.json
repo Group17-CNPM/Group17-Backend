@@ -7,139 +7,301 @@
 	},
 	"item": [
 		{
-			"name": "login",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{nmcnpm_local}}/login?username=admin01&password=admin",
-					"host": [
-						"{{nmcnpm_local}}"
-					],
-					"path": [
-						"login"
-					],
-					"query": [
-						{
-							"key": "username",
-							"value": "admin01"
-						},
-						{
-							"key": "password",
-							"value": "admin"
+			"name": "loginController",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm_local}}/login?username=admin&password=admin",
+							"host": [
+								"{{nmcnpm_local}}"
+							],
+							"path": [
+								"login"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "admin"
+								},
+								{
+									"key": "password",
+									"value": "admin"
+								}
+							]
 						}
-					]
+					},
+					"response": []
+				},
+				{
+					"name": "checkToken",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm_local}}/checkToken?token=7b51affc2953e43ec105fda2453734a5",
+							"host": [
+								"{{nmcnpm_local}}"
+							],
+							"path": [
+								"checkToken"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "7b51affc2953e43ec105fda2453734a5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm}}/logout?token=58f1483e92883baf35b2382565c60ea8",
+							"host": [
+								"{{nmcnpm}}"
+							],
+							"path": [
+								"logout"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "58f1483e92883baf35b2382565c60ea8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logoutAllDevice",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm_local}}/logoutAllDevice?token=df9db5c109640e96090012ac74997641",
+							"host": [
+								"{{nmcnpm_local}}"
+							],
+							"path": [
+								"logoutAllDevice"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "df9db5c109640e96090012ac74997641"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "getListNhankhau",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{nmcnpm_local}}/getListNhankhau?token=58f1483e92883baf35b2382565c60ea8",
-					"host": [
-						"{{nmcnpm_local}}"
-					],
-					"path": [
-						"getListNhankhau"
-					],
-					"query": [
-						{
-							"key": "token",
-							"value": "58f1483e92883baf35b2382565c60ea8"
+			"name": "userController",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm_local}}/register?username=ketoan&password=admin&email=tranphuc8a@gmail.com&role=2&token=3e3f60e1586a3bfa5fd83f2d9d7b972d",
+							"host": [
+								"{{nmcnpm_local}}"
+							],
+							"path": [
+								"register"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "ketoan",
+									"description": ">= 5; chữ số, kí tự thường"
+								},
+								{
+									"key": "password",
+									"value": "admin",
+									"description": ">= 5; chữ số, kí tự thường, đặc biệt"
+								},
+								{
+									"key": "email",
+									"value": "tranphuc8a@gmail.com",
+									"description": "đúng form"
+								},
+								{
+									"key": "role",
+									"value": "2",
+									"description": "1: Ban quản lý, 2: Kế toán"
+								},
+								{
+									"key": "token",
+									"value": "3e3f60e1586a3bfa5fd83f2d9d7b972d"
+								}
+							]
 						}
-					]
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm_local}}/updateUser?token=6ed4122d48d1f7c800bcfb07cc5593bd&username=admin&email=tranphuc8a@gmail.com&role=1",
+							"host": [
+								"{{nmcnpm_local}}"
+							],
+							"path": [
+								"updateUser"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "6ed4122d48d1f7c800bcfb07cc5593bd"
+								},
+								{
+									"key": "username",
+									"value": "admin"
+								},
+								{
+									"key": "email",
+									"value": "tranphuc8a@gmail.com"
+								},
+								{
+									"key": "role",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "changePassword",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm_local}}/changePassword?token=94411ab3d4903691424eea9afaab9a11&username=admin&password=admin",
+							"host": [
+								"{{nmcnpm_local}}"
+							],
+							"path": [
+								"changePassword"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "94411ab3d4903691424eea9afaab9a11"
+								},
+								{
+									"key": "username",
+									"value": "admin"
+								},
+								{
+									"key": "password",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm_local}}/deleteUser?token=6ed4122d48d1f7c800bcfb07cc5593bd&username=ketoan",
+							"host": [
+								"{{nmcnpm_local}}"
+							],
+							"path": [
+								"deleteUser"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "6ed4122d48d1f7c800bcfb07cc5593bd"
+								},
+								{
+									"key": "username",
+									"value": "ketoan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cancelUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm_local}}/cancelUser?token=94411ab3d4903691424eea9afaab9a11&password=admin",
+							"host": [
+								"{{nmcnpm_local}}"
+							],
+							"path": [
+								"cancelUser"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "94411ab3d4903691424eea9afaab9a11"
+								},
+								{
+									"key": "password",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "logout",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{nmcnpm_local}}/logout?token=58f1483e92883baf35b2382565c60ea8",
-					"host": [
-						"{{nmcnpm_local}}"
-					],
-					"path": [
-						"logout"
-					],
-					"query": [
-						{
-							"key": "token",
-							"value": "58f1483e92883baf35b2382565c60ea8"
+			"name": "nhankhauController",
+			"item": [
+				{
+					"name": "getListNhankhau",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{nmcnpm_local}}/getListNhankhau?token=b8feee21eef244ceec6e8e3989d96744",
+							"host": [
+								"{{nmcnpm_local}}"
+							],
+							"path": [
+								"getListNhankhau"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "b8feee21eef244ceec6e8e3989d96744"
+								}
+							]
 						}
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "register",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{nmcnpm_local}}/register?username=admin01&password=admin&email=tranphuc8a@gmail.com&role=1",
-					"host": [
-						"{{nmcnpm_local}}"
-					],
-					"path": [
-						"register"
-					],
-					"query": [
-						{
-							"key": "username",
-							"value": "admin01",
-							"description": ">= 5; chữ số, kí tự thường"
-						},
-						{
-							"key": "password",
-							"value": "admin",
-							"description": ">= 5; chữ số, kí tự thường, đặc biệt"
-						},
-						{
-							"key": "email",
-							"value": "tranphuc8a@gmail.com",
-							"description": "đúng form"
-						},
-						{
-							"key": "role",
-							"value": "1",
-							"description": "1: Ban quản lý, 2: Kế toán"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "checkToken",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{nmcnpm_local}}/checkToken?token=f66f2c1fbf8dcc0fd88d13d7e00bb6c1",
-					"host": [
-						"{{nmcnpm_local}}"
-					],
-					"path": [
-						"checkToken"
-					],
-					"query": [
-						{
-							"key": "token",
-							"value": "f66f2c1fbf8dcc0fd88d13d7e00bb6c1"
-						}
-					]
-				}
-			},
-			"response": []
+			]
 		}
 	]
 }
