@@ -7,6 +7,12 @@ class NhankhauRouter{
 	}
 	route(){
 
+		this.app.route("/searchNhankhau")
+			.get(function(req, res){
+				let nhankhauController = new NhankhauController();
+				nhankhauController.searchNhankhau(req, res);
+			});
+
 		this.app.route("/getListNhankhau")
 			.get(function(req, res){
 				let nhankhauController = new NhankhauController();
@@ -48,6 +54,8 @@ class NhankhauRouter{
 				let nhankhauController = new NhankhauController();
 				nhankhauController.deleteNhankhau(req, res);
 			});
+
+
 		
 	}
 }

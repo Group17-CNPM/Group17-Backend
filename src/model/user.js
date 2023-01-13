@@ -33,6 +33,7 @@ class User {
             result = await connection.my_query(query);
         } catch(err){
             console.log(err);
+            return null;
         }
 
         let listUser = [];
@@ -51,6 +52,7 @@ class User {
             result = await connection.my_query(query);
         } catch(err){
             console.log(err);
+            return null;
         }
 
         let user = null;
@@ -67,6 +69,7 @@ class User {
             result = await connection.my_query(query);
         } catch(err){
             console.log(err);
+            return null;
         }
         
         return result;
@@ -84,6 +87,7 @@ class User {
             result = result1 && result2;
         } catch(err){
             console.log(err);
+            return null;
         }
         
         return result;
@@ -99,6 +103,7 @@ class User {
             result = await connection.my_query(query);
         } catch(err){
             console.log(err);
+            return null;
         }
         
         return result;
@@ -114,6 +119,7 @@ class User {
             result = await connection.my_query(query);
         } catch(err){
             console.log(err);
+            return null;
         }
         
         return result;

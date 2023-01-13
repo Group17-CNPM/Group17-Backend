@@ -16,6 +16,62 @@ class NhankhauController{
 		return numberRegex.test(String(number));
 	}
 
+
+	/*
+	route: GET [domain]/searchNhankhau
+	query: {
+		token: "xxx",
+		idnhankhau: "xxx"
+		hoten: "Trần Văn Phúc"
+		ngaysinh: "2001-04-22"
+		gioitinh: 1   (0: nữ, 1: nam)
+		quequan: "Hưng Yên"
+		dantoc: "Kinh"
+		tongiao: "Không"
+		sohokhau: "1"
+		quanhevoichuho: "Là chủ hộ"
+		cccd: "123456789"
+		ngaycap: "2022-12-20"
+		noicap: "Hưng Yên"
+		nghenghiep: "Sinh viên"
+		ngaydangkythuongtru: "2022-04-22"
+		ngaythemnhankhau: "2022-04-22"
+		ghichu: "Không có ghi chú"
+	required params: token
+	optional params: others params
+	}
+	*/
+	async searchNhankhau(req, res){
+		// check token
+		let result = await LoginController.checkToken(req, res);
+		if (!result) return;
+
+		// get params
+		let { 
+			token, idnhankhau, hoten, ngaysinh, gioitinh, quequan, dantoc, tongiao, 
+		 	sohokhau, quanhevoichuho, cccd, ngaycap, noicap, nghenghiep, 
+			ngaydangkythuongtru, ngaythemnhankhau, ghichu
+		} = req.query;
+
+		var nhankhau = new Nhankhau({
+			idnhankhau: idnhankhau, hoten: hoten, ngaysinh: ngaysinh, gioitinh: gioitinh, quequan: quequan, dantoc: dantoc, 
+			tongiao: tongiao, sohokhau: sohokhau, quanhevoichuho: quanhevoichuho,
+			cccd: cccd, ngaycap: ngaycap, noicap: noicap, nghenghiep: nghenghiep, 
+			ngaydangkythuongtru: ngaydangkythuongtru, ngaythemnhankhau: ngaythemnhankhau, ghichu: ghichu
+		});
+
+		// search
+		let listNhankhau = await Nhankhau.search(nhankhau);
+
+		if (listNhankhau == null){
+			Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
+			return;
+		}
+
+		Response.response(res, Response.ResponseCode.OK, "Success", listNhankhau, "Thành công");
+	
+	}
+
 	/*
 	route: GET [domain]/getListNhankhau
 	query: {
@@ -27,7 +83,7 @@ class NhankhauController{
 		let result = await LoginController.checkToken(req, res);
 		if (!result) return;
 
-		let listNhankhau = await Nhankhau.selectAll();
+		let listNhankhau = await Nhankhau.select({});
 
 		if (listNhankhau == null){
 			Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
@@ -56,7 +112,7 @@ class NhankhauController{
 			return;
 		}
 
-		let listNhankhau = await Nhankhau.selectBySoHoKhau(sohokhau);
+		let listNhankhau = await Nhankhau.select({sohokhau: sohokhau});
 
 		if (listNhankhau == null){
 			Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
@@ -85,7 +141,7 @@ class NhankhauController{
 			return;
 		}
 
-		let nhankhau = await Nhankhau.getNhankhauById(idnhankhau);
+		let nhankhau = await Nhankhau.getById(idnhankhau);
 
 		if (nhankhau == null){
 			Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy");
@@ -114,14 +170,14 @@ class NhankhauController{
 			return;
 		}
 
-		let nhankhau = await Nhankhau.getNhankhauByCCCD(cccd);
+		let nhankhau = await Nhankhau.select({cccd: cccd});
 
 		if (nhankhau == null){
 			Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy");
 			return;
 		}
 
-		Response.response(res, Response.ResponseCode.OK, "Success", nhankhau);
+		Response.response(res, Response.ResponseCode.OK, "Success", nhankhau[0]);
 	}
 
 
@@ -167,13 +223,17 @@ class NhankhauController{
 			return;
 		}
 
-		var nhankhau = new Nhankhau(null, hoten, ngaysinh, gioitinh, quequan, dantoc, tongiao, sohokhau, quanhevoichuho,
-			cccd, ngaycap, noicap, nghenghiep, ngaydangkythuongtru, ngaythemnhankhau, ghichu);
+		var nhankhau = new Nhankhau({
+			id: null, hoten: hoten, ngaysinh: ngaysinh, gioitinh: gioitinh, quequan: quequan, dantoc: dantoc, tongiao: tongiao, 
+			sohokhau: sohokhau, quanhevoichuho: quanhevoichuho,
+			cccd: cccd, ngaycap: ngaycap, noicap: noicap, nghenghiep: nghenghiep, 
+			ngaydangkythuongtru: ngaydangkythuongtru, ngaythemnhankhau: ngaythemnhankhau, ghichu: ghichu
+		});
 
 		// check cccd is existed:
 		if (cccd != null){
-			let nhankhau = await Nhankhau.getNhankhauByCCCD(cccd);
-			if (nhankhau != null){
+			let nhankhau = await Nhankhau.select(cccd);
+			if (nhankhau != null && nhankhau.length > 0){
 				Response.response(res, Response.ResponseCode.ERROR, "cccd is existed", req.query);
 				return;
 			}
@@ -218,14 +278,16 @@ class NhankhauController{
 		}
 
 		// add Nhankhau
-		result = await Nhankhau.addNhankhau(nhankhau);
+		result = await Nhankhau.insert(nhankhau);
 
 		if (result == null){
 			Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm nhân khẩu thất bại");
 			return;
 		}
 
+		nhankhau.id = result.insertId;
 		Response.response(res, Response.ResponseCode.OK, "Success", nhankhau, "Đã thêm nhân khẩu");
+		// Response.response(res, Response.ResponseCode.OK, "Success", result, "Đã thêm nhân khẩu");
 	}
 
 
@@ -269,11 +331,16 @@ class NhankhauController{
 			return;
 		}
 
-		var nhankhau = new Nhankhau(idnhankhau, hoten, ngaysinh, gioitinh, quequan, dantoc, tongiao, sohokhau, quanhevoichuho,
-			cccd, ngaycap, noicap, nghenghiep, ngaydangkythuongtru, ngaythemnhankhau, ghichu);
+		var nhankhau = new Nhankhau({
+			id: idnhankhau, hoten: hoten, ngaysinh: ngaysinh, gioitinh: gioitinh, quequan: quequan, dantoc: dantoc, 
+			tongiao: tongiao, sohokhau: sohokhau, quanhevoichuho: quanhevoichuho,
+			cccd: cccd, ngaycap: ngaycap, noicap: noicap, nghenghiep: nghenghiep, 
+			ngaydangkythuongtru: ngaydangkythuongtru, ngaythemnhankhau: ngaythemnhankhau, 
+			ghichu: ghichu
+		});
 
 		// check nhankhau is existed:
-		var old_nhankhau = await Nhankhau.getNhankhauById(idnhankhau);
+		var old_nhankhau = await Nhankhau.getById(idnhankhau);
 		if (old_nhankhau == null){
 			Response.response(res, Response.ResponseCode.ERROR, "nhankhau is not existed", req.query, "Không tồn tại nhân khẩu");
 			return;
@@ -281,8 +348,8 @@ class NhankhauController{
 
 		// check cccd is existed:
 		if (cccd != null){
-			let nhankhau2 = await Nhankhau.getNhankhauByCCCD(cccd);
-			if (nhankhau2 != null && String(nhankhau2.id) != String(idnhankhau)){
+			let nhankhau2 = await Nhankhau.select({cccd: cccd});
+			if (nhankhau2 != null && nhankhau2.length > 0 && String(nhankhau2.id) != String(idnhankhau)){
 				Response.response(res, Response.ResponseCode.ERROR, "cccd is existed", req.query);
 				return;
 			}
@@ -328,7 +395,7 @@ class NhankhauController{
 
 		// add Nhankhau
 		old_nhankhau.copy_from(nhankhau);
-		result = await Nhankhau.updateNhankhau(old_nhankhau);
+		result = await Nhankhau.update(old_nhankhau);
 
 		if (result == null){
 			Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Update nhân khẩu thất bại");
@@ -359,7 +426,7 @@ class NhankhauController{
 		}
 
 		// check nhankhau is existed:
-		let nhankhau = await Nhankhau.getNhankhauById(idnhankhau);
+		let nhankhau = await Nhankhau.getById(idnhankhau);
 		if (nhankhau == null){
 			Response.response(res, Response.ResponseCode.ERROR, "nhankhau is not existed", req.query, "Nhân khẩu không tồn tại");
 			return;
@@ -371,7 +438,7 @@ class NhankhauController{
 
 
 		// delete nhankhau
-		result = await Nhankhau.deleteNhankhau(idnhankhau);
+		result = await Nhankhau.delete({id: idnhankhau});
 		if (result == null){
 			Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Xóa nhân khẩu thất bại");
 			return;

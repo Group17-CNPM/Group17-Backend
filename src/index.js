@@ -15,6 +15,12 @@ var host_database = {
     password: "quanlynhankhau",
     database: "quanlynhankhau"
 };
+var host_database_2 = {
+    host: "sql.freedb.tech",
+    user: "freedb_tranphuc8a",
+    password: "c98$vexU5sX9G?m",
+    database: "freedb_quanlynhankhau"
+};
 var local_database = {
     host: "localhost",
     user: "root",
@@ -22,6 +28,7 @@ var local_database = {
     database: "quanlynhankhau"
 };
 
+// var connection = mysql.createConnection(host_database_2);
 var connection = mysql.createConnection(host_database);
 // var connection = mysql.createConnection(local_database);
 

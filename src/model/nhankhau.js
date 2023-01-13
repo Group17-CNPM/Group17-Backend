@@ -1,248 +1,225 @@
 
 /*
-id
-hoten
-ngaysinh
-gioitinh
-quequan
-dantoc
-tongiao
-sohokhau
-quanhevoichuho
-cccd
-ngaycap
-noicap
-nghenghiep
-ngaydangkythuongtru
-ngaythemnhankhau
-ghichu
+- id
+- hoten
+- ngaysinh
+- gioitinh
+- quequan
+- dantoc
+- tongiao
+- sohokhau
+- quanhevoichuho
+- cccd
+- ngaycap
+- noicap
+- nghenghiep
+- ngaydangkythuongtru
+- ngaythemnhankhau
+- ghichu
 */
 
-class Nhankhau {
-    constructor(
-    	id = null,
-    	hoten = null,
-    	ngaysinh = null, 
-    	gioitinh = null,
-    	quequan = null,
-    	dantoc = null,
-    	tongiao = null,
-    	sohokhau = null, 
-    	quanhevoichuho = null, 
-    	cccd = null, 	
-    	ngaycap = null,
-    	noicap = null,
-    	nghenghiep = null,
-    	ngaydangkythuongtru = null,
-    	ngaythemnhankhau = null,
-    	ghichu = null
-	) { 
-		this.id 				 	= id;
-		this.hoten 					= hoten;
-		this.ngaysinh 				= ngaysinh;
-		this.gioitinh 				= gioitinh;
-		this.quequan 				= quequan;
-		this.dantoc 				= dantoc;
-		this.tongiao 				= tongiao;
-		this.sohokhau 				= sohokhau;
-		this.quanhevoichuho 		= quanhevoichuho;
-		this.cccd 					= cccd;
-		this.ngaycap 				= ngaycap;
-		this.noicap 				= noicap;
-		this.nghenghiep 			= nghenghiep;
-		this.ngaydangkythuongtru 	= ngaydangkythuongtru;
-		this.ngaythemnhankhau 		= ngaythemnhankhau;
-		this.ghichu 				= ghichu;
+class Nhankhau{
+    // static properties
+    static table = "nhankhau";
+    static array_key = [
+        "id", "hoten", "ngaysinh", "gioitinh", "quequan", "dantoc", "tongiao", 
+        "sohokhau", "quanhevoichuho", 
+        "cccd", "ngaycap", "noicap", 
+        "nghenghiep", "ngaydangkythuongtru", "ngaythemnhankhau", "ghichu"
+    ];
+    // non static methods => Object
+    constructor(nhankhau){
+        for (let key of Nhankhau.keys()){
+            this[key] = nhankhau[key];
+        }
     }
-    copy_from(user){
-        if (user == null) return;
-        this.id 					= user.id 					?? this.id;
-        this.hoten 					= user.hoten 				?? this.hoten;
-		this.ngaysinh 				= user.ngaysinh 			?? this.ngaysinh;
-		this.gioitinh 				= user.gioitinh 			?? this.gioitinh;
-		this.quequan 				= user.quequan 				?? this.quequan;
-		this.dantoc 				= user.dantoc 				?? this.dantoc;
-		this.tongiao 				= user.tongiao 				?? this.tongiao;
-		this.sohokhau 				= user.sohokhau 			?? this.sohokhau;
-		this.quanhevoichuho 		= user.quanhevoichuho 		?? this.quanhevoichuho;
-		this.cccd 					= user.cccd 				?? this.cccd;
-		this.ngaycap 				= user.ngaycap 				?? this.ngaycap;
-		this.noicap 				= user.noicap 				?? this.noicap;
-		this.nghenghiep 			= user.nghenghiep 			?? this.nghenghiep;
-		this.ngaydangkythuongtru 	= user.ngaydangkythuongtru 	?? this.ngaydangkythuongtru;
-		this.ngaythemnhankhau 		= user.ngaythemnhankhau 	?? this.ngaythemnhankhau;
-		this.ghichu 				= user.ghichu 				?? this.ghichu;
+    copy_from(nhankhau){
+        if (nhankhau == null) return;
+        for (let key of Nhankhau.keys()){
+            this[key] = nhankhau[key] ?? this[key];
+        }
     }
-    static fromJson(json){
-        if (json == null) return;
-        var user = new Nhankhau();
-        user.id 					= json.id;
-        user.hoten 					= json.hoten;
-		user.ngaysinh 				= Nhankhau.getDateString(json.ngaysinh);
-		user.gioitinh 				= json.gioitinh;
-		user.quequan 				= json.quequan;
-		user.dantoc 				= json.dantoc;
-		user.tongiao 				= json.tongiao;
-		user.sohokhau 				= json.sohokhau;
-		user.quanhevoichuho 		= json.quanhevoichuho;
-		user.cccd 					= json.cccd;
-		user.role 					= json.role;
-		user.ngaycap 				= Nhankhau.getDateString(json.capngay);
-		user.noicap 				= json.noicap;
-		user.nghenghiep 			= json.nghenghiep;
-		user.ngaydangkythuongtru 	= Nhankhau.getDateString(json.ngaydangkythuongtru);
-		user.ngaythemnhankhau 		= Nhankhau.getDateString(json.ngaythemnhankhau);
-		user.ghichu 				= json.ghichu;
-        return user;
+    async save(){
+        let nhankhau = await Nhankhau.getById(this.id);
+        if (nhankhau == null){
+            // insert if not existed
+            return await Nhankhau.insert(this);
+        } else {
+            // update if existed
+            return await Nhankhau.update(this);
+        }
     }
-    static getSQLValue(field){
-    	if (field == null) return "null";
-    	return `'${field}'`;
-    }
-    static getDateString(d){
-    	d = new Date(String(d));
-    	return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+    async delete(){
+        return await Nhankhau.delete(this);
     }
 
-    static async selectAll() {
-        var connection = require('../index.js').connection;
-        var result;
+    // static methods => Table
+    static keys() { return Nhankhau.array_key; }
+    static from_json(json){
+        if (json == null) return null;
+        return new Nhankhau(json);
+    }
+    static getSQLValue(value){
+        if (value == null) return "null";
+        return `'${value}'`;
+    }
+    static getSelectString(key, value){
+        if (value == null) return "";
+        return ` (${key} = '${value}') `;
+    }
+    static getSearchString(key, value, isString = true){
+        if (value == null) return "";
+        if (isString) {
+            return ` (INSTR(${key}, '${value}') > 0 OR INSTR('${value}', ${key}) > 0 OR ${key} = '${value}') `;
+        }
+        return ` (${key} = '${value}') `;
+    }
+
+
+// CRUD:    
+    // Create
+    static async insert(nhankhau){
+        let connection = require('../index.js').connection;
+        let params, result;
+        params = Nhankhau.keys()
+        .map(key => Nhankhau.getSQLValue(nhankhau[key]))
+        .join(', ');
         
-        try {
-        	let query = `SELECT * FROM nhankhau`;
-        	result = await connection.my_query(query);
-        } catch (err){
-        	console.log(err);
+        let query = `INSERT INTO ${Nhankhau.table} VALUE (${params})`;
+        try{
+            result = await connection.my_query(query);
+        } catch (e){
+            console.log(e);
         }
 
-        let listNhankhau = [];
+        return result;
+    }
+    // Read
+    static async select(nhankhau, keys = null){
+        let connection = require('../index.js').connection;
+        let result, selectFields, whereParams;
+
+        if (keys == null || keys.length <= 0) {
+            selectFields = `*`
+        } else {
+            selectFields = keys.join(', ');
+        }
+        
+        whereParams = Object.keys(nhankhau)
+        .map(key => Nhankhau.getSelectString(key, nhankhau[key]))
+        .join(' AND ');
+        
+        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""};`;
+        try{
+            result = await connection.my_query(query);
+        } catch (e){
+            console.log(e);
+            return null;
+        }
+
+        let list = [];
+        console.log(result);
         result.forEach(function(element){
-            listNhankhau.push(Nhankhau.fromJson(element));
+            list.push(Nhankhau.from_json(element));
         });
-        
-        return listNhankhau;
-    }
 
-    static async selectBySoHoKhau(sohokhau){
-    	var connection = require('../index.js').connection;
-        var result;
-        
-        try {
-        	let query = `SELECT * FROM nhankhau WHERE sohokhau = '${sohokhau}'`;
-        	result = await connection.my_query(query);
-        } catch (err){
-        	console.log(err);
+        return list;
+    }
+    static async getById(id, keys = null){
+        let connection = require('../index.js').connection;
+        let result, selectFields = ``;
+        if (keys == null || keys.length <= 0) {
+            selectFields = `*`
+        } else {
+            selectFields = keys.join(', ');
+        }
+        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE id = ${id}`;
+        try{
+            result = await connection.my_query(query);
+        } catch (e){
+            console.log(e);
+            return null;
         }
 
-        let listNhankhau = [];
+        return result[0];
+    }
+    static async search(nhankhau, keys = null){
+        let connection = require('../index.js').connection;
+        let result, selectFields, whereParams;
+
+        if (keys == null || keys.length <= 0) {
+            selectFields = `*`
+        } else {
+            selectFields = keys.join(', ');
+        }
+        
+        whereParams = Object.keys(nhankhau)
+        .filter(key => nhankhau[key] != null)
+        .map(key => Nhankhau.getSearchString(key, nhankhau[key]))
+        .join(' AND ');
+        
+        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""};`;
+        try{
+            result = await connection.my_query(query);
+        } catch (e){
+            console.log(e);
+            return null;
+        }
+
+        let list = [];
         result.forEach(function(element){
-            listNhankhau.push(Nhankhau.fromJson(element));
+            list.push(Nhankhau.from_json(element));
         });
-        
-        return listNhankhau;
+
+        return list;
     }
+    // Update
+    static async update(nhankhau, where){
+        let connection = require('../index.js').connection;
+        let result;
+        let setParams, whereParams;
 
-    static async getNhankhauById(idnhankhau){
-    	var connection = require('../index.js').connection;
-        var result;
-        
-        try {
-        	let query = `SELECT * FROM nhankhau WHERE id = '${idnhankhau}'`;
-        	result = await connection.my_query(query);
-        } catch (err){
-        	console.log(err);
-        }
+        setParams = Object.keys(nhankhau)
+        .map(key => `${key} = ${Nhankhau.getSQLValue(nhankhau[key])}`)
+        .join(', ');
 
-        if (result.length <= 0) return null;
-        
-        return Nhankhau.fromJson(result[0]);
-    }
+        whereParams = Nhankhau.keys().
+        map(key => Nhankhau.getSelectString(key, where[key]))
+        .join(', ');
 
-    static async getNhankhauByCCCD(cccd){
-    	var connection = require('../index.js').connection;
-        var result;
-        
-        try {
-        	let query = `SELECT * FROM nhankhau WHERE cccd = '${cccd}'`;
-        	result = await connection.my_query(query);
-        } catch (err){
-        	console.log(err);
-        }
-
-        if (result.length <= 0) return null;
-        
-        return Nhankhau.fromJson(result[0]);    	
-    }
-    
-    static async addNhankhau(nhankhau){
-    	var connection = require('../index.js').connection;
-        var result;
-        let query = `INSERT INTO nhankhau VALUE (
-        				null, 
-        				${Nhankhau.getSQLValue(nhankhau.hoten)}, 	${Nhankhau.getSQLValue(nhankhau.ngaysinh)}, 
-        				${Nhankhau.getSQLValue(nhankhau.gioitinh)}, ${Nhankhau.getSQLValue(nhankhau.quequan)}, 
-        				${Nhankhau.getSQLValue(nhankhau.dantoc)}, 	${Nhankhau.getSQLValue(nhankhau.tongiao)}, 
-        				${Nhankhau.getSQLValue(nhankhau.sohokhau)}, ${Nhankhau.getSQLValue(nhankhau.quanhevoichuho)}, 
-        				${Nhankhau.getSQLValue(nhankhau.cccd)}, 	${Nhankhau.getSQLValue(nhankhau.ngaycap)}, 
-        				${Nhankhau.getSQLValue(nhankhau.noicap)}, 	${Nhankhau.getSQLValue(nhankhau.nghenghiep)}, 
-        				${Nhankhau.getSQLValue(nhankhau.ngaydangkythuongtru)}, ${Nhankhau.getSQLValue(nhankhau.ngaythemnhankhau)}, 
-        				${Nhankhau.getSQLValue(nhankhau.ghichu)}
-        			);`;
-        try {	
-        	result = await connection.my_query(query);
-        } catch (err){
-        	console.log(err);
+        let query = `UPDATE ${Nhankhau.table} SET ${setParams} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;
+        try{
+            result = await connection.my_query(query);
+        } catch (e){
+            console.log(e);
+            return null;
         }
 
         return result;
     }
-
-    static async updateNhankhau(nhankhau){
-    	var connection = require('../index.js').connection;
-        var result;
-        let query = `UPDATE nhankhau SET
-        				hoten 				= ${Nhankhau.getSQLValue(nhankhau.hoten)}, 	
-        				ngaysinh 			= ${Nhankhau.getSQLValue(nhankhau.ngaysinh)}, 
-        				gioitinh 			= ${Nhankhau.getSQLValue(nhankhau.gioitinh)}, 
-        				quequan 			= ${Nhankhau.getSQLValue(nhankhau.quequan)}, 
-        				dantoc 				= ${Nhankhau.getSQLValue(nhankhau.dantoc)}, 	
-        				tongiao 			= ${Nhankhau.getSQLValue(nhankhau.tongiao)}, 
-        				sohokhau 			= ${Nhankhau.getSQLValue(nhankhau.sohokhau)}, 
-        				quanhevoichuho 		= ${Nhankhau.getSQLValue(nhankhau.quanhevoichuho)}, 
-        				cccd 				= ${Nhankhau.getSQLValue(nhankhau.cccd)}, 	
-        				capngay 			= ${Nhankhau.getSQLValue(nhankhau.ngaycap)}, 
-        				noicap 				= ${Nhankhau.getSQLValue(nhankhau.noicap)}, 	
-        				nghenghiep 			= ${Nhankhau.getSQLValue(nhankhau.nghenghiep)}, 
-        				ngaydangkythuongtru = ${Nhankhau.getSQLValue(nhankhau.ngaydangkythuongtru)}, 
-        				ngaythemnhankhau 	= ${Nhankhau.getSQLValue(nhankhau.ngaythemnhankhau)}, 
-        				ghichu 				= ${Nhankhau.getSQLValue(nhankhau.ghichu)}
-        			WHERE id = '${nhankhau.id}';`;
+    // Delete
+    static async delete(nhankhau){
+        let connection = require('../index.js').connection;
+        let result;
+        let whereParams = Object.keys(nhankhau)
+        .map(key => Nhankhau.getSelectString(key, nhankhau[key]))
+        .join(', ');
         
-        try {	
-        	result = await connection.my_query(query);
-        } catch (err){
-        	console.log(err);
+        let query = `DELETE FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;
+        try{
+            result = await connection.my_query(query);
+        } catch (e){
+            console.log(e);
+            return null;
         }
 
         return result;
     }
-
-
-    static async deleteNhankhau(idnhankhau){
-    	var connection = require('../index.js').connection;
-        var result;
-        let query = `DELETE FROM nhankhau WHERE id = '${idnhankhau}';`;
-        
-        try {	
-        	result = await connection.my_query(query);
-        } catch (err){
-        	console.log(err);
-        }
-
-        return result;
-    }
-
 }
+
+
+
+
 
 
 module.exports = { Nhankhau };

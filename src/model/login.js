@@ -14,6 +14,7 @@ class Login{
             result = await connection.my_query(query);
         } catch(err){
             console.log(err);
+            return null;
         }
         
         return result;
@@ -29,6 +30,7 @@ class Login{
             result = await connection.my_query(query);
         } catch(err){
             console.log(err);
+            return null;
         }
 
         if (result.length <= 0) return null;
@@ -46,6 +48,7 @@ class Login{
             result = await connection.my_query(query);
         } catch(err){
             console.log(err);
+            return null;
         }
 
         return result;
@@ -61,6 +64,7 @@ class Login{
             result = await connection.my_query(query);
         } catch(err){
             console.log(err);
+            return null;
         }
 
         return result;
