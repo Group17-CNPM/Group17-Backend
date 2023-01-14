@@ -22,11 +22,11 @@ var local_database = {
     database: "quanlynhankhau"
 };
 
-var connection = mysql.createConnection(host_database);
-// var connection = mysql.createConnection(local_database);
+// var connection = mysql.createConnection(host_database);
+var connection = mysql.createConnection(local_database);
 
 console.log("Connecting to mysql host...");
-connection.connect(function(err){
+connection.connect(function (err) {
     if (err) {
         console.log("Connect mysql failed!");
         return;
@@ -48,7 +48,7 @@ connection.connect(function(err){
     // run server
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
-        
+
     });
 });
 
