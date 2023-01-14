@@ -12,7 +12,7 @@ class Router {
 		this.loginRouter = new LoginRouter(app);
 		this.userRouter = new UserRouter(app);
 		this.nhankhauRouter = new NhankhauRouter(app);
-		this.lichsuRouter = new LoginRouter(app);
+		this.lichsuRouter = new LichsuRouter(app);
 		this.hokhauRouter = new HokhauRouter(app);
 	}
 	route() {

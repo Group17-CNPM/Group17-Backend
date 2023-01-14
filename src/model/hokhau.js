@@ -107,15 +107,11 @@ class HoKhau {
         return listHoKhau;
     }
 
-    static async getHokhauByCccdChuho(cccd) {
+    static async getHokhauByCccdChuho(nhankhau) {
         var connection = require('../index.js').connection;
         var result;
 
         try {
-            let nhankhau = await Nhankhau.getNhankhauByCCCD(cccd);
-            if (nhankhau == null) {
-                return null;
-            }
             let query = `SELECT * FROM hokhau WHERE idchuho = ${nhankhau.id}`;
             result = await connection.my_query(query);
         } catch (err) {
@@ -193,20 +189,16 @@ class HoKhau {
         return result;
     }
 
-    static async deleteHokhauByCccd(cccd) {
+    static async deleteHokhauByCccd(nhankhau) {
         var connection = require('../index.js').connection;
         var result;
 
         try {
-            let nhankhau = await Nhankhau.getNhankhauByCCCD(cccd);
-            if (nhankhau == null) {
-                Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd");
-                return;
-            }
             let query = `DELETE FROM hokhau WHERE idchuho = ${nhankhau.id}`;
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);
+            return null;
         }
 
         return result;

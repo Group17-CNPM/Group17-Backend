@@ -87,16 +87,16 @@ class HokhauController {
             return;
         }
 
-        let nhankhau = await Nhankhau.getNhankhauByCCCD(cccd);
-        if (nhankhau == null) {
+        let nhankhau = await Nhankhau.select({ cccd: cccd });
+        if (nhankhau == null || nhankhau.length <= 0) {
             Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd");
-            return null;
+            return;
         }
 
-        let hokhau = await HoKhau.getHokhauByCccdChuho(cccd);
+        let hokhau = await HoKhau.getHokhauByCccdChuho(nhankhau[0]);
 
         if (hokhau == null) {
-            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy");
+            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy hộ khẩU với cccd này");
             return;
         }
 
@@ -155,12 +155,12 @@ class HokhauController {
             token, cccd, sonha, duong, phuong, quan, ngaylamhokhau
         } = req.query;
 
-        let nhankhau = await Nhankhau.getNhankhauByCCCD(cccd);
-        if (nhankhau == null) {
-            Response.response(res, Response.ResponseCode, "Cccd doesn't exist", req.query, "Không tìm thấy cccd");
+        let nhankhau = await Nhankhau.select({ cccd: cccd });
+        if (nhankhau == null || nhankhau.length <= 0) {
+            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd");
             return;
         }
-        let idchuho = nhankhau.id;
+        let idchuho = nhankhau[0].id;
 
         if (token == undefined || idchuho == undefined || sonha == undefined ||
             duong == undefined || phuong == undefined ||
@@ -184,18 +184,19 @@ class HokhauController {
             return;
         }
 
+        //todo: còn phải update quan hệ với chủ hộ sau khi đã add thành công
+        nhankhau[0].quanhevoichuho = "Là chủ hộ";
+        result = await Nhankhau.update(nhankhau[0], { id: nhankhau[0].id });
+        if (result == null) {
+            Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm hộ khẩu thất bại ở khâu update vai trò nhân khẩu");
+            return;
+        }
+
         //add ho khau
         var hokhau = new HoKhau(null, idchuho, sonha, duong, phuong, quan, ngaylamhokhau);
         result = await HoKhau.addHokhau(hokhau);
         if (result == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm hộ khẩu thất bại");
-            return;
-        }
-        //todo: còn phải update quan hệ với chủ hộ sau khi đã add thành công
-        nhankhau.quanhevoichuho = "Là chủ hộ";
-        result = await Nhankhau.updateNhankhau(nhankhau);
-        if (result == null) {
-            Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm hộ khẩu thất bại ở khâu update vai trò nhân khẩu");
             return;
         }
 
@@ -230,7 +231,12 @@ class HokhauController {
             return;
         }
 
-        let hokhau = await HoKhau.getHokhauByCccdChuho(cccd);
+        let nhankhau = await Nhankhau.select({ cccd: cccd });
+        if (nhankhau == null || nhankhau.length <= 0) {
+            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd");
+            return;
+        }
+        let hokhau = await HoKhau.getHokhauByCccdChuho(nhankhau[0]);
         //check hokhau existed
         if (hokhau == null) {
             Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd là chủ hộ");
@@ -289,28 +295,44 @@ class HokhauController {
             return;
         }
 
-        let hokhau = await HoKhau.getHokhauByCccdChuho(cccdChuhoOld);
+        //check chuho cu existed
+        let nhankhauOld = await Nhankhau.select({ cccd: cccdChuhoOld });
+        if (nhankhauOld == null || nhankhauOld.length <= 0) {
+            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd chủ hộ cũ");
+            return;
+        }
+        let hokhau = await HoKhau.getHokhauByCccdChuho(nhankhauOld[0]);
         //check hokhau cu existed
         if (hokhau == null) {
             Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd cũ là chủ hộ");
             return;
         }
 
+
+
+        //check chuho moi existed
+        let nhankhauNew = await Nhankhau.select({ cccd: cccdChuhoNew });
+        if (nhankhauNew == null || nhankhauNew.length <= 0) {
+            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd chủ hộ mới");
+            return;
+        }
+
         //check hokhau cua chu moi existed
-        let hokhauMoi = await HoKhau.getHokhauByCccdChuho(cccdChuhoNew);
+        let hokhauMoi = await HoKhau.getHokhauByCccdChuho(nhankhauNew[0]);
         if (hokhauMoi != null) {
             Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Existed hokhau of new chuho", req.query, "Chủ hộ mới đã có hộ khẩu rồi");
             return;
         }
 
-        //check nhankhau moi existed
-        let nhankhauNew = await Nhankhau.getNhankhauByCCCD(cccdChuhoNew);
-        if (nhankhauNew == null) {
-            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd của chủ hộ mới");
+        //update vai tro cua chu ho moi
+        nhankhauNew[0].quanhevoichuho = "Là chủ hộ";
+        result = await Nhankhau.update(nhankhauNew[0], { id: nhankhauNew[0].id });
+        if (result == null) {
+            Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm hộ khẩu thất bại ở khâu update vai trò nhân khẩu");
             return;
         }
 
-        result = await HoKhau.updateChuho(hokhau, nhankhauNew.id);
+        result = await HoKhau.updateChuho(hokhau, nhankhauNew[0].id);
         if (result == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Update chủ hộ thất bại");
             return;
@@ -338,21 +360,21 @@ class HokhauController {
             return;
         }
 
-        let nhankhau = await Nhankhau.getNhankhauByCCCD(cccd);
-        if (nhankhau == null) {
+        let nhankhau = await Nhankhau.select({ cccd: cccd });
+        if (nhankhau == null || nhankhau.length <= 0) {
             Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd");
             return;
         }
 
         //check hokhau existed
-        let hokhau = await HoKhau.getHokhauByCccdChuho(cccd);
+        let hokhau = await HoKhau.getHokhauByCccdChuho(nhankhau[0]);
         if (hokhau == null) {
             Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd là chủ hộ");
             return;
         }
 
         //delete hokhau
-        result = await HoKhau.deleteHokhauByCccd(cccd);
+        result = await HoKhau.deleteHokhauByCccd(nhankhau[0]);
         if (result == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Xóa hộ khẩu thất bại");
             return;
