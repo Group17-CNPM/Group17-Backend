@@ -121,9 +121,9 @@ class HoKhau {
             return null;
         }
 
-        let hokhau = result;
+        if (result == null) return null;
 
-        return hokhau;
+        return HoKhau.fromjson(result[0]);
     }
 
     static async getHokhauByCccdChuho(nhankhau) {
