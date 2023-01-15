@@ -8,13 +8,6 @@ let CryptoJS = require('crypto-js');
 class LoginController{
 	constructor(){}
 
-	static getCurrentStringTime(){
-		let d = new Date();
-		return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
-	}
-
-
-
 	/*
 	route: GET [domain]/login
 	query: {
@@ -45,7 +38,7 @@ class LoginController{
 		}
 
 		// Login:
-		let time = LoginController.getCurrentStringTime();
+		let time = Utils.getCurrentDateTimeString();
 		let token = String(CryptoJS.MD5(`${username}${password}${time}`));
 		
 		let result = await Login.insert(token, username, time);

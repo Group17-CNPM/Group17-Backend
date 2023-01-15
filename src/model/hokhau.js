@@ -51,7 +51,7 @@ class HoKhau {
         hokhau.duong = json.duong;
         hokhau.phuong = json.phuong;
         hokhau.quan = json.quan;
-        hokhau.ngaylamhokhau = json.ngaylamhokhau;
+        hokhau.ngaylamhokhau = this.getDateString(json.ngaylamhokhau);
         return hokhau;
     }
 
@@ -66,7 +66,7 @@ class HoKhau {
 
     static getDateString(d) {
         d = new Date(String(d));
-        return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+        return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()} ${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}`;
     }
 
     static async selectAll() {
