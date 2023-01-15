@@ -28,8 +28,8 @@ var local_database = {
     database: "quanlynhankhau"
 };
 
-var connection = mysql.createConnection(host_database);
-// var connection = mysql.createConnection(local_database);
+// var connection = mysql.createConnection(host_database);
+var connection = mysql.createConnection(local_database);
 
 console.log("Connecting to mysql host...");
 connection.connect(function (err) {

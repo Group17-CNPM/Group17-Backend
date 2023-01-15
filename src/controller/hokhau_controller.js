@@ -70,6 +70,36 @@ class HokhauController {
     }
 
     /*
+    route: GET [domain]/getHokhauByIdChuho
+    query: {
+        token: "xxx",
+        idchuho: "xxx"
+    }
+    */
+    async getHokhauBySoHokhau(req, res) {
+        //check token
+        let result = await LoginController.checkToken(req, res);
+        if (!result) return;
+
+        let { token, sohokhau } = req.query;
+
+        if (sohokhau == undefined) {
+            Response.response(res, Response.ResponseCode.ERROR, "Lack of sohokhau", req.query, "Thiếu số hộ khẩu");
+            return;
+        }
+
+        let listHoKhau = await HoKhau.getHokhauBySoHokhau(sohokhau);
+
+        if (listHoKhau == null) {
+            Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
+            return;
+        }
+
+        Response.response(res, Response.ResponseCode.OK, "Success", listHoKhau);
+
+    }
+
+    /*
     route: GET [domain]/getHokhauByCccdChuho
     query: {
         token: "xxx",

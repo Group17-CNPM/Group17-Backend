@@ -20,6 +20,12 @@ class HokhauRouter {
                 hokhauController.getHokhauByIdChuHo(req, res);
             });
 
+        this.app.route("/getHokhauBySoHokhau")
+            .get(function (req, res) {
+                let hokhauController = new HokhauController();
+                hokhauController.getHokhauBySoHokhau(req, res);
+            });
+
         this.app.route("/getHokhauByCccdChuho")
             .get(function (req, res) {
                 let hokhauController = new HokhauController();

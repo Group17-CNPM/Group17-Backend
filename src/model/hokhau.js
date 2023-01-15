@@ -109,6 +109,26 @@ class HoKhau {
         return listHoKhau;
     }
 
+    static async getHokhauBySoHokhau(sohokhau) {
+        var connection = require('../index.js').connection;
+        var result;
+
+        try {
+            let query = `SELECT * FROM hokhau WHERE sohokhau = '${sohokhau}'`;
+            result = await connection.my_query(query);
+        } catch (err) {
+            console.log(err);
+            return null;
+        }
+
+        let listHoKhau = [];
+        result.forEach(function (element) {
+            listHoKhau.push(HoKhau.fromjson(element));
+        });
+
+        return listHoKhau;
+    }
+
     static async getHokhauByCccdChuho(nhankhau) {
         var connection = require('../index.js').connection;
         var result;
