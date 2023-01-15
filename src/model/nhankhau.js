@@ -57,22 +57,42 @@ class Nhankhau {
     static keys() { return Nhankhau.array_key; }
     static from_json(json) {
         if (json == null) return null;
-        return new Nhankhau(json);
+        let nhankhau = new Nhankhau(json);
+        nhankhau.ngaysinh = Nhankhau.getDateString(nhankhau.ngaysinh);
+        nhankhau.capngay = Nhankhau.getDateString(nhankhau.capngay);
+        nhankhau.ngaydangkythuongtru = Nhankhau.getDateString(nhankhau.ngaydangkythuongtru);
+        nhankhau.ngaythemnhankhau = Nhankhau.getDateString(nhankhau.ngaythemnhankhau);
+        return nhankhau;
+    }
+    static getDateString(d){
+        if (d == null) return "1970-1-1 0:0:0";
+        d = new Date(String(d));
+        return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
     }
     static getSQLValue(value) {
         if (value == null) return "null";
         return `'${value}'`;
     }
-    static getSelectString(key, value) {
-        if (value == null) return "";
-        return ` (${key} = '${value}') `;
-    }
-    static getSearchString(key, value, isString = true) {
-        if (value == null) return "";
-        if (isString) {
-            return ` (INSTR(${key}, '${value}') > 0 OR INSTR('${value}', ${key}) > 0 OR ${key} = '${value}') `;
+    static getEquation(key, value, acceptNull = false){
+        if (value == null) {
+            if (acceptNull){
+                return ` (${key} = null) `;
+            } else {
+                return "";
+            }
         }
         return ` (${key} = '${value}') `;
+    }
+    static getSearchEquation(key, value, acceptNull = false) {
+        // console.log(acceptNull);
+        if (value == null) {
+            if (acceptNull){
+                return ` (${key} = null) `;
+            } else {
+                return "";
+            }
+        }
+        return ` (INSTR(${key}, '${value}') > 0 OR INSTR('${value}', ${key}) > 0 OR ${key} = '${value}') `;
     }
 
 
@@ -90,6 +110,7 @@ class Nhankhau {
             result = await connection.my_query(query);
         } catch (e) {
             console.log(e);
+            return null;
         }
 
         return result;
@@ -106,7 +127,7 @@ class Nhankhau {
         }
 
         whereParams = Object.keys(nhankhau)
-            .map(key => Nhankhau.getSelectString(key, nhankhau[key]))
+            .map(key => Nhankhau.getEquation(key, nhankhau[key]))
             .join(' AND ');
 
         let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""};`;
@@ -118,7 +139,7 @@ class Nhankhau {
         }
 
         let list = [];
-        console.log(result);
+        // console.log(result);
         result.forEach(function (element) {
             list.push(Nhankhau.from_json(element));
         });
@@ -154,9 +175,11 @@ class Nhankhau {
         }
 
         whereParams = Object.keys(nhankhau)
-            .filter(key => nhankhau[key] != null)
-            .map(key => Nhankhau.getSearchString(key, nhankhau[key]))
+            .filter(key => nhankhau[key])
+            .map(key => Nhankhau.getSearchEquation(key, nhankhau[key], false))
             .join(' AND ');
+
+        // console.log(Object.keys(nhankhau));
 
         let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""};`;
         try {
@@ -187,7 +210,7 @@ class Nhankhau {
             .join(', ');
 
         whereParams = Object.keys(where).
-            map(key => Nhankhau.getSelectString(key, where[key]))
+            map(key => Nhankhau.getEquation(key, where[key], true))
             .join(', ');
 
         let query = `UPDATE ${Nhankhau.table} SET ${setParams} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;
@@ -205,7 +228,7 @@ class Nhankhau {
         let connection = require('../index.js').connection;
         let result;
         let whereParams = Object.keys(nhankhau)
-            .map(key => Nhankhau.getSelectString(key, nhankhau[key]))
+            .map(key => Nhankhau.getEquation(key, nhankhau[key], true))
             .join(', ');
 
         let query = `DELETE FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;

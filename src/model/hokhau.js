@@ -78,6 +78,7 @@ class HoKhau {
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);
+            return null;
         }
 
         let listHokhau = [];
@@ -97,6 +98,7 @@ class HoKhau {
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);
+            return null;
         }
 
         let listHoKhau = [];
@@ -116,6 +118,7 @@ class HoKhau {
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);
+            return null;
         }
 
         if (result == null) return null;
@@ -135,10 +138,11 @@ class HoKhau {
                 + this.getSearchString('phuong', phuong) + ` AND `
                 + this.getSearchString('duong', duong) + ` AND `
                 + this.getSearchString('sonha', sonha);
-            console.log(query);
+            // console.log(query);
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);
+            return null;
         }
 
         let listHoKhau = [];
@@ -158,6 +162,7 @@ class HoKhau {
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);
+            return null;
         }
 
         return result;
@@ -171,6 +176,7 @@ class HoKhau {
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);
+            return null;
         }
 
         return result;
@@ -184,6 +190,7 @@ class HoKhau {
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);
+            return null;
         }
 
         return result;

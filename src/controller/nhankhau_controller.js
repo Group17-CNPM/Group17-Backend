@@ -232,7 +232,7 @@ class NhankhauController {
 
 		// check cccd is existed:
 		if (cccd != null) {
-			let nhankhau = await Nhankhau.select(cccd);
+			let nhankhau = await Nhankhau.select({cccd: cccd});
 			if (nhankhau != null && nhankhau.length > 0) {
 				Response.response(res, Response.ResponseCode.ERROR, "cccd is existed", req.query);
 				return;
