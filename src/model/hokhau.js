@@ -121,12 +121,9 @@ class HoKhau {
             return null;
         }
 
-        let listHoKhau = [];
-        result.forEach(function (element) {
-            listHoKhau.push(HoKhau.fromjson(element));
-        });
+        let hokhau = result;
 
-        return listHoKhau;
+        return hokhau;
     }
 
     static async getHokhauByCccdChuho(nhankhau) {
