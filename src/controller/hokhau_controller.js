@@ -150,7 +150,7 @@ class HokhauController {
         if (!result) return;
 
         let {
-            quan, phuong, duong, sonha
+            token, quan, phuong, duong, sonha
         } = req.query;
 
         let listHokhau = await HoKhau.getHokhauByDiaChi(quan, phuong, duong, sonha);
@@ -214,7 +214,6 @@ class HokhauController {
             return;
         }
 
-        //todo: còn phải update quan hệ với chủ hộ sau khi đã add thành công
         nhankhau[0].quanhevoichuho = "Là chủ hộ";
         result = await Nhankhau.update(nhankhau[0], { id: nhankhau[0].id });
         if (result == null) {
