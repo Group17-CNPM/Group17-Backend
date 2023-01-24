@@ -43,6 +43,7 @@ class HoKhau {
     }
 
     static fromjson(json) {
+        console.log(json);
         if (json == null) return;
         var hokhau = new HoKhau();
         hokhau.sohokhau = json.sohokhau;

@@ -1,24 +1,18 @@
 
 
 class Utils{
+    static timezone = new Date().getTimezoneOffset() / 60;
 
-
-	static getCurrentDateTime(){
-		// return new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Ho_Chi_Minh"}));
-        let date = new Date();
-        date.setHours(date.getHours() + 7);
+    static getDateFromString(str, gmt = +7){ // return UTC date from string with gmt
+        let date = new Date(String(str));
+        date.setHours(date.getHours() + timezone + gmt);
         return date;
-	}
-
-    static getCurrentDateTimeString(){
-        return Utils.getDateString(Utils.getCurrentDateTime());
     }
-
-	static getDateString(d){
-        if (d == null) return "1970-1-1 0:0:0";
-        d = new Date(String(d));
-        return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()} ${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}`;
+	static getStringFromDate(date, gmt = +7){ // return string date in gmt from UTC date
+        if (date == null) return "1970-1-1 0:0:0";
+        return `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()} ${date.getUTCHours() + gmt}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
     }
+    
     static getSQLValue(value) {
         if (value == null) return "null";
         return `'${value}'`;
