@@ -2,20 +2,10 @@
 let Nhankhau = require('../model/nhankhau.js').Nhankhau;
 let Response = require('../utils/response.js').Response;
 let LoginController = require('../controller/login_controller.js').LoginController;
+let Utils = require('../utils/utils.js').Utils;
 
 class NhankhauController {
 	constructor() { }
-	checkDate(date) {
-		if (date == null) return false;
-		let dateRegex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
-		return dateRegex.test(date);
-	}
-	checkNumber(number) {
-		if (number == null) return false;
-		let numberRegex = /^[0-9]{1,}$/;
-		return numberRegex.test(String(number));
-	}
-
 
 	/*
 	route: GET [domain]/searchNhankhau
@@ -247,7 +237,7 @@ class NhankhauController {
 			Response.response(res, Response.ResponseCode.ERROR, "hoten is invalid", req.query);
 			return;
 		}
-		if (!this.checkDate(ngaysinh)) {
+		if (!Utils.checkDate(ngaysinh)) {
 			Response.response(res, Response.ResponseCode.ERROR, "ngaysinh is invalid", req.query);
 			return;
 		}
@@ -256,23 +246,23 @@ class NhankhauController {
 			Response.response(res, Response.ResponseCode.ERROR, "gioitinh is invalid", req.query);
 			return;
 		}
-		if (sohokhau != null && !this.checkNumber(sohokhau)) {
+		if (sohokhau != null && !Utils.checkNumber(sohokhau)) {
 			Response.response(res, Response.ResponseCode.ERROR, "sohokhau is invalid", req.query);
 			return;
 		}
-		if (cccd != null && !this.checkNumber(cccd)) {
+		if (cccd != null && !Utils.checkNumber(cccd)) {
 			Response.response(res, Response.ResponseCode.ERROR, "cccd is invalid", req.query);
 			return;
 		}
-		if (ngaycap != null && !this.checkDate(ngaycap)) {
+		if (ngaycap != null && !Utils.checkDate(ngaycap)) {
 			Response.response(res, Response.ResponseCode.ERROR, "ngaycap is invalid", req.query);
 			return;
 		}
-		if (ngaydangkythuongtru != null && !this.checkDate(ngaydangkythuongtru)) {
+		if (ngaydangkythuongtru != null && !Utils.checkDate(ngaydangkythuongtru)) {
 			Response.response(res, Response.ResponseCode.ERROR, "ngaydangkythuongtru is invalid", req.query);
 			return;
 		}
-		if (ngaythemnhankhau != null && !this.checkDate(ngaythemnhankhau)) {
+		if (ngaythemnhankhau != null && !Utils.checkDate(ngaythemnhankhau)) {
 			Response.response(res, Response.ResponseCode.ERROR, "ngaythemnhankhau is invalid", req.query);
 			return;
 		}
@@ -363,7 +353,7 @@ class NhankhauController {
 			Response.response(res, Response.ResponseCode.ERROR, "hoten is invalid", req.query);
 			return;
 		}
-		if (ngaysinh != null && !this.checkDate(ngaysinh)) {
+		if (ngaysinh != null && !Utils.checkDate(ngaysinh)) {
 			Response.response(res, Response.ResponseCode.ERROR, "ngaysinh is invalid", req.query);
 			return;
 		}
@@ -372,23 +362,23 @@ class NhankhauController {
 			Response.response(res, Response.ResponseCode.ERROR, "gioitinh is invalid", req.query);
 			return;
 		}
-		if (sohokhau != null && !this.checkNumber(sohokhau)) {
+		if (sohokhau != null && !Utils.checkNumber(sohokhau)) {
 			Response.response(res, Response.ResponseCode.ERROR, "sohokhau is invalid", req.query);
 			return;
 		}
-		if (cccd != null && !this.checkNumber(cccd)) {
+		if (cccd != null && !Utils.checkNumber(cccd)) {
 			Response.response(res, Response.ResponseCode.ERROR, "cccd is invalid", req.query);
 			return;
 		}
-		if (ngaycap != null && !this.checkDate(ngaycap)) {
+		if (ngaycap != null && !Utils.checkDate(ngaycap)) {
 			Response.response(res, Response.ResponseCode.ERROR, "ngaycap is invalid", req.query);
 			return;
 		}
-		if (ngaydangkythuongtru != null && !this.checkDate(ngaydangkythuongtru)) {
+		if (ngaydangkythuongtru != null && !Utils.checkDate(ngaydangkythuongtru)) {
 			Response.response(res, Response.ResponseCode.ERROR, "ngaydangkythuongtru is invalid", req.query);
 			return;
 		}
-		if (ngaythemnhankhau != null && !this.checkDate(ngaythemnhankhau)) {
+		if (ngaythemnhankhau != null && !Utils.checkDate(ngaythemnhankhau)) {
 			Response.response(res, Response.ResponseCode.ERROR, "ngaythemnhankhau is invalid", req.query);
 			return;
 		}

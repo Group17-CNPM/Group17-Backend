@@ -1,16 +1,24 @@
 
 
 class Utils{
-    static timezone = new Date().getTimezoneOffset() / 60;
-
-    static getDateFromString(str, gmt = +7){ // return UTC date from string with gmt
-        let date = new Date(String(str));
-        date.setHours(date.getHours() + timezone + gmt);
+    static getUTCDateFromString(str, gmt = +7){ // return UTC date from string with gmt
+        let t = new Date(String(str));
+        let date = new Date(
+            Date.UTC(
+                t.getFullYear(), t.getMonth(), t.getDate(), 
+                t.getHours() - gmt, t.getMinutes(), t.getSeconds()
+            )
+        );
         return date;
     }
-	static getStringFromDate(date, gmt = +7){ // return string date in gmt from UTC date
+	static getStringFromUTCDate(date, gmt = +7){ // return string date in gmt from UTC date
         if (date == null) return "1970-1-1 0:0:0";
-        return `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}-${date.getUTCDate()} ${date.getUTCHours() + gmt}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
+        return `${date.getUTCFullYear()}-`  + 
+            `${date.getUTCMonth() + 1}-`    +
+            `${date.getUTCDate()} `         +
+            `${date.getUTCHours() + gmt}:`  +
+            `${date.getUTCMinutes()}:`      +
+            `${date.getUTCSeconds()}`;
     }
     
     static getSQLValue(value) {
@@ -21,20 +29,17 @@ class Utils{
         if (value == null) {
             if (acceptNull){
                 return ` (${key} = null) `;
-            } else {
-                return "";
-            }
+            } 
+            return "";
         }
         return ` (${key} = '${value}') `;
     }
     static getSearchEquation(key, value, acceptNull = false) {
-        // console.log(acceptNull);
         if (value == null) {
             if (acceptNull){
                 return ` (${key} = null) `;
-            } else {
-                return "";
-            }
+            } 
+            return "";
         }
         return ` (INSTR(${key}, '${value}') > 0 OR INSTR('${value}', ${key}) > 0 OR ${key} = '${value}') `;
     }
@@ -48,6 +53,23 @@ class Utils{
         if (number == null) return false;
         let numberRegex = /^[0-9]{1,}$/;
         return numberRegex.test(String(number));
+    }
+    static checkUsername(username){
+        let usernameRegex = /^[a-zA-Z0-9]{5,30}$/;
+        return usernameRegex.test(username);
+    }
+    static checkPassword(password){
+        let passwordRegex = /^[a-zA-Z0-9!@#$%^&*_]{5,30}$/;
+        return passwordRegex.test(password);
+    }
+    static checkEmail(email){
+        let emailRegex = /([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
+        return emailRegex.test(email);
+    }
+    static checkRole(role){
+        // role: 1 là Ban quản lý, 2 là Kế toán
+        role = String(role);
+        return role == "1" || role == "2";
     }
 }
 

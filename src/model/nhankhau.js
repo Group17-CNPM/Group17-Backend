@@ -1,4 +1,4 @@
-
+var Utils = require('../utils/utils.js').Utils;
 /*
 - id
 - hoten
@@ -58,55 +58,25 @@ class Nhankhau {
     static from_json(json) {
         if (json == null) return null;
         let nhankhau = new Nhankhau(json);
-        if (Object.keys(json).includes("ngaysinh"))
-            nhankhau.ngaysinh = Nhankhau.getDateString(nhankhau.ngaysinh);
-        if (Object.keys(json).includes("capngay"))
-            nhankhau.capngay = Nhankhau.getDateString(nhankhau.capngay);
-        if (Object.keys(json).includes("ngaydangkythuongtru"))
-            nhankhau.ngaydangkythuongtru = Nhankhau.getDateString(nhankhau.ngaydangkythuongtru);
-        if (Object.keys(json).includes("ngaythemnhankhau"))
-            nhankhau.ngaythemnhankhau = Nhankhau.getDateString(nhankhau.ngaythemnhankhau);
+        // if (Object.keys(json).includes("ngaysinh"))
+        //     nhankhau.ngaysinh = Utils.getUTCDateFromString(nhankhau.ngaysinh);
+        // if (Object.keys(json).includes("capngay"))
+        //     nhankhau.capngay = Utils.getUTCDateFromString(nhankhau.capngay);
+        // if (Object.keys(json).includes("ngaydangkythuongtru"))
+        //     nhankhau.ngaydangkythuongtru = Utils.getUTCDateFromString(nhankhau.ngaydangkythuongtru);
+        // if (Object.keys(json).includes("ngaythemnhankhau"))
+        //     nhankhau.ngaythemnhankhau = Utils.getUTCDateFromString(nhankhau.ngaythemnhankhau);
         return nhankhau;
     }
-    static getDateString(d){
-        if (d == null) return "1970-1-1 0:0:0";
-        d = new Date(String(d));
-        return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()} ${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}`;
-    }
-    static getSQLValue(value) {
-        if (value == null) return "null";
-        return `'${value}'`;
-    }
-    static getEquation(key, value, acceptNull = false){
-        if (value == null) {
-            if (acceptNull){
-                return ` (${key} = null) `;
-            } else {
-                return "";
-            }
-        }
-        return ` (${key} = '${value}') `;
-    }
-    static getSearchEquation(key, value, acceptNull = false) {
-        // console.log(acceptNull);
-        if (value == null) {
-            if (acceptNull){
-                return ` (${key} = null) `;
-            } else {
-                return "";
-            }
-        }
-        return ` (INSTR(${key}, '${value}') > 0 OR INSTR('${value}', ${key}) > 0 OR ${key} = '${value}') `;
-    }
 
 
-    // CRUD:    
+// CRUD:    
     // Create
     static async insert(nhankhau) {
         let connection = require('../index.js').connection;
         let params, result;
         params = Nhankhau.keys()
-            .map(key => Nhankhau.getSQLValue(nhankhau[key]))
+            .map(key => Utils.getSQLValue(nhankhau[key]))
             .join(', ');
 
         let query = `INSERT INTO ${Nhankhau.table} VALUE (${params})`;
@@ -131,7 +101,7 @@ class Nhankhau {
         }
 
         whereParams = Object.keys(nhankhau)
-            .map(key => Nhankhau.getEquation(key, nhankhau[key]))
+            .map(key => Utils.getEquation(key, nhankhau[key]))
             .join(' AND ');
 
         let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""};`;
@@ -180,7 +150,7 @@ class Nhankhau {
 
         whereParams = Object.keys(nhankhau)
             .filter(key => nhankhau[key])
-            .map(key => Nhankhau.getSearchEquation(key, nhankhau[key], false))
+            .map(key => Utils.getSearchEquation(key, nhankhau[key], false))
             .join(' AND ');
 
         // console.log(Object.keys(nhankhau));
@@ -210,11 +180,11 @@ class Nhankhau {
         let setParams, whereParams;
 
         setParams = Object.keys(nhankhau)
-            .map(key => `${key} = ${Nhankhau.getSQLValue(nhankhau[key])}`)
+            .map(key => `${key} = ${Utils.getSQLValue(nhankhau[key])}`)
             .join(', ');
 
         whereParams = Object.keys(where).
-            map(key => Nhankhau.getEquation(key, where[key], true))
+            map(key => Utils.getEquation(key, where[key], true))
             .join(', ');
 
         let query = `UPDATE ${Nhankhau.table} SET ${setParams} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;
@@ -232,7 +202,7 @@ class Nhankhau {
         let connection = require('../index.js').connection;
         let result;
         let whereParams = Object.keys(nhankhau)
-            .map(key => Nhankhau.getEquation(key, nhankhau[key], true))
+            .map(key => Utils.getEquation(key, nhankhau[key], true))
             .join(', ');
 
         let query = `DELETE FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;

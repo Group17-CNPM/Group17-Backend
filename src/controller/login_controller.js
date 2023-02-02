@@ -39,7 +39,7 @@ class LoginController{
 		}
 
 		// Login:
-		let time = Utils.getCurrentDateTimeString();
+		let time = Utils.getStringFromUTCDate(new Date());
 		let token = String(CryptoJS.MD5(`${username}${password}${time}`));
 		
 		let result = await Login.insert(token, username, time);
@@ -102,27 +102,18 @@ class LoginController{
 			return false;
 		}
 
-		console.log(login);
+		// console.log(login);
 
-
-		let date = new Date('2023-01-16 12:00:00');
-		console.log(date);
 		// check token is expired
-		let expire = 5 * 60 * 1000; // 10 secs to milisecs
-		// let expire = 24 * 3600 * 1000; // 1 day to miliseconds
-		let logintime = new Date(login.time);
-		let loginTime = logintime.getTime();
-		let now = Utils.getCurrentDateTime();
-		let nowTime = now.getTime();
-		// console.log(now);
-		// console.log(logintime);
-		// console.log("delta = " + (nowTime - loginTime));
+		let expire = 24 * 60 * 60 * 1000; // 24 hours to miliseconds
+		let loginTime = Utils.getUTCDateFromString(login.time).getTime();
+		let now = new Date().getTime();
 		if (now - loginTime > expire){
 			Response.response(res, Response.ResponseCode.ERROR, "Token is expired", req.query, "Token đã hết hạn");
 			return false;
 		}
 
-		req.username = username;
+		req.username = login.username;
 		return true;
 	}
 
