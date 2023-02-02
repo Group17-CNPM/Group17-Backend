@@ -77,7 +77,7 @@ class LichsuController{
 		}
 
 		// nhân khẩu chưa trong hộ khẩu nào, thêm nhân khẩu vào hộ khẩu
-		let time = Utils.getCurrentDateTimeString();
+		let time = Utils.getStringFromUTCDate(new Date());
 		console.log(time);
 		result = await Lichsu.addNhankhauToHokhau(sohokhau, nhankhau.id, time);
 
@@ -88,7 +88,7 @@ class LichsuController{
 		}
 
 		// Thành công
-		req.query.time = Utils.getCurrentDateTime();
+		req.query.time = Utils.getStringFromUTCDate(new Date());
 		Response.response(res, Response.ResponseCode.OK, "Success", req.query, "Thêm nhân khẩu thành công vào hộ khẩu");
 	}
 
@@ -161,7 +161,7 @@ class LichsuController{
 		}
 
 		// xóa nhân khẩu khỏi hộ khẩu
-		let time = Utils.getCurrentDateTimeString();
+		let time = Utils.getStringFromUTCDate(new Date());
 		result = await Lichsu.deleteNhankhauFromHokhau(sohokhau, nhankhau.id, time);
 
 		// Xóa bị lỗi
@@ -260,7 +260,7 @@ class LichsuController{
 			return;
 		}
 		if (time == undefined){
-			time = Utils.getCurrentDateTime();
+			time = Utils.getStringFromUTCDate(new Date());
 		} else {
 			 // check time is valid
 			if (!Utils.checkDate(time)){
@@ -276,9 +276,9 @@ class LichsuController{
 			return;
 		}
 
-		let reqTime = new Date(time).getTime() / 1000;
-		let createTime = new Date(hokhau.ngaylamhokhau).getTime() / 1000;
-		let now = Utils.getCurrentDateTime().getTime() / 1000;
+		let reqTime = Utils.getUTCDateFromString(time).getTime() / 1000;
+		let createTime = Utils.getUTCDateFromString(hokhau.ngaylamhokhau).getTime() / 1000;
+		let now = (new Date()).getTime() / 1000;
 		// console.log("createTime: " + createTime);
 		// console.log("now: " + now);
 		// console.log("reqTime: " + reqTime);

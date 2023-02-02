@@ -3,6 +3,7 @@ let Login = require('../model/login.js').Login;
 let User = require('../model/user.js').User;
 let Response = require('../utils/response.js').Response;
 let CryptoJS = require('crypto-js');
+let Utils = require('../utils/utils.js').Utils;
 
 
 class LoginController{
@@ -38,7 +39,7 @@ class LoginController{
 		}
 
 		// Login:
-		let time = Utils.getCurrentDateTimeString();
+		let time = Utils.getStringFromUTCDate(new Date());
 		let token = String(CryptoJS.MD5(`${username}${password}${time}`));
 		
 		let result = await Login.insert(token, username, time);
@@ -94,14 +95,25 @@ class LoginController{
 			return false;
 		} 
 
-		// get username by token
-		username = await Login.getUsernameByToken(token);
-		if (username == null) {
+		// get login by token
+		let login = await Login.getLogin(token);
+		if (login == null) {
 			Response.response(res, Response.ResponseCode.ERROR, "Token is invalid", req.query);
 			return false;
 		}
 
-		req.username = username;
+		// console.log(login);
+
+		// check token is expired
+		let expire = 24 * 60 * 60 * 1000; // 24 hours to miliseconds
+		let loginTime = Utils.getUTCDateFromString(login.time).getTime();
+		let now = new Date().getTime();
+		if (now - loginTime > expire){
+			Response.response(res, Response.ResponseCode.ERROR, "Token is expired", req.query, "Token đã hết hạn");
+			return false;
+		}
+
+		req.username = login.username;
 		return true;
 	}
 

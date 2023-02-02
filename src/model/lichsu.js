@@ -1,4 +1,7 @@
 
+let Utils = require('../utils/utils.js').Utils;
+
+
 /*
 - id
 - sohokhau
@@ -44,40 +47,10 @@ class Lichsu {
     static from_json(json) {
         if (json == null) return null;
         let lichsu = new Lichsu(json);
-        lichsu.thoigian = Lichsu.getDateString(lichsu.thoigian);
+        // lichsu.thoigian = Utils.getUTCDateFromString(lichsu.thoigian);
         return lichsu;
     }
-    static getDateString(d){
-        if (d == null) return "1970-1-1 0:0:0";
-        d = new Date(String(d));
-        return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()} ${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}`;
-    }
-    static getSQLValue(value) {
-        if (value == null) return "null";
-        return `'${value}'`;
-    }
-    static getEquation(key, value, acceptNull = false){
-        if (value == null) {
-            if (acceptNull){
-                return ` (${key} = null) `;
-            } else {
-                return "";
-            }
-        }
-        return ` (${key} = '${value}') `;
-    }
-    static getSearchEquation(key, value, acceptNull = false) {
-        // console.log(acceptNull);
-        if (value == null) {
-            if (acceptNull){
-                return ` (${key} = null) `;
-            } else {
-                return "";
-            }
-        }
-        return ` (INSTR(${key}, '${value}') > 0 OR INSTR('${value}', ${key}) > 0 OR ${key} = '${value}') `;
-    }
-
+    
 
 // CRUD:    
     // Create
@@ -85,7 +58,7 @@ class Lichsu {
         let connection = require('../index.js').connection;
         let params, result;
         params = Lichsu.keys()
-            .map(key => Lichsu.getSQLValue(lichsu[key]))
+            .map(key => Utils.getSQLValue(lichsu[key]))
             .join(', ');
 
         let query = `INSERT INTO ${Lichsu.table} VALUE (${params})`;
@@ -111,7 +84,7 @@ class Lichsu {
         }
 
         whereParams = Object.keys(lichsu)
-            .map(key => Lichsu.getEquation(key, lichsu[key]))
+            .map(key => Utils.getEquation(key, lichsu[key]))
             .join(' AND ');
 
         let query = `SELECT ${selectFields} FROM ${Lichsu.table} 
@@ -162,7 +135,7 @@ class Lichsu {
 
         whereParams = Object.keys(lichsu)
             .filter(key => lichsu[key])
-            .map(key => Lichsu.getSearchEquation(key, lichsu[key], false))
+            .map(key => Utils.getSearchEquation(key, lichsu[key], false))
             .join(' AND ');
 
         // console.log(Object.keys(lichsu));
@@ -193,13 +166,13 @@ class Lichsu {
         let result, setParams, whereParams;
 
         setParams = Object.keys(lichsu)
-            .map(key => `${key} = ${Lichsu.getSQLValue(lichsu[key])}`)
+            .map(key => `${key} = ${Utils.getSQLValue(lichsu[key])}`)
             .join(', ');
 
         console.log(setParams);
 
         whereParams = Object.keys(where)
-        	.map(key => Lichsu.getEquation(key, where[key], true))
+        	.map(key => Utils.getEquation(key, where[key], true))
             .join(', ');
 
         let query = `UPDATE ${Lichsu.table} SET ${setParams} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;
@@ -217,7 +190,7 @@ class Lichsu {
         let connection = require('../index.js').connection;
         let result;
         let whereParams = Object.keys(lichsu)
-            .map(key => Lichsu.getEquation(key, lichsu[key], true))
+            .map(key => Utils.getEquation(key, lichsu[key], true))
             .join(', ');
 
         let query = `DELETE FROM ${Lichsu.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;

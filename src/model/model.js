@@ -32,14 +32,7 @@ class Model{
 		if (json == null) return null;
 		return new Model(json);
 	}
-	static getSQLValue(value){
-    	if (value == null) return "null";
-    	return `'${value}'`;
-    }
-    static getSelectString(key, value){
-        if (value == null) return "";
-        return ` (${key} = '${value}') `;
-    }
+	
 
 	// Create
 	// insert object model to db

@@ -2,30 +2,11 @@
 let User = require('../model/user.js').User;
 let Login = require('../model/login.js').Login;
 let LoginController = require('../controller/login_controller.js').LoginController;
-let Response = require('../utils/response.js').Response
+let Response = require('../utils/response.js').Response;
+let Utils = require('../utils/utils.js').Utils;
 
 class UserController{
 	constructor(){}
-
-	checkUsername(username){
-		let usernameRegex = /^[a-zA-Z0-9]{5,30}$/;
-		return usernameRegex.test(username);
-	}
-	checkPassword(password){
-		let passwordRegex = /^[a-zA-Z0-9!@#$%^&*_]{5,30}$/;
-		return passwordRegex.test(password);
-	}
-	checkEmail(email){
-		let emailRegex = /([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
-		return emailRegex.test(email);
-	}
-	checkRole(role){
-		// role: 1 là Ban quản lý, 2 là Kế toán
-		role = String(role);
-		return role == "1" || role == "2";
-	}
-
-
 	
 	/*
 	route: GET [domain]/register
@@ -58,19 +39,19 @@ class UserController{
 		}
 
 		// check fields is valid
-		if (!this.checkUsername(username)){
+		if (!Utils.checkUsername(username)){
 			Response.response(res, Response.ResponseCode.ERROR, "Username is invalid", req.query);
 			return;
 		}
-		if (!this.checkPassword(password)){
+		if (!Utils.checkPassword(password)){
 			Response.response(res, Response.ResponseCode.ERROR, "Password is invalid", req.query);
 			return;
 		}
-		if (!this.checkEmail(email)){
+		if (!Utils.checkEmail(email)){
 			Response.response(res, Response.ResponseCode.ERROR, "Email is invalid", req.query);
 			return;
 		}
-		if (!this.checkRole(role)){
+		if (!Utils.checkRole(role)){
 			Response.response(res, Response.ResponseCode.ERROR, "Role is invalid", req.query, "1: Ban quản lý, 2: Kế toán");
 			return;
 		}
@@ -160,6 +141,7 @@ class UserController{
 		// Chỉ Ban quản lý mới đổi được thông tin tài khoản
 		let curUsername = req.username;
 		let curUser = await User.getUserByUsername(curUsername);
+		// console.log(curUser);
 		if (curUser == null || curUser.role != "1"){
 			Response.response(res, Response.ResponseCode.ERROR, "No right", req.query, "Chỉ Ban quản lý thực hiện được");
 			return;
@@ -173,11 +155,11 @@ class UserController{
 		}
 
 		// check fields is valid
-		if (!this.checkEmail(email)){
+		if (!Utils.checkEmail(email)){
 			Response.response(res, Response.ResponseCode.ERROR, "Email is invalid", req.query);
 			return;
 		}
-		if (!this.checkRole(role)){
+		if (!Utils.checkRole(role)){
 			Response.response(res, Response.ResponseCode.ERROR, "Role is invalid", req.query, "1: Ban quản lý, 2: Kế toán");
 			return;
 		}
@@ -228,7 +210,7 @@ class UserController{
 		}
 
 		// check password is valid
-		if (!this.checkPassword(password)){
+		if (!Utils.checkPassword(password)){
 			Response.response(res, Response.ResponseCode.ERROR, "Password is invalid", req.query);
 			return;
 		}

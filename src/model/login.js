@@ -20,6 +20,24 @@ class Login{
         return result;
     }
 
+    static async getLogin(token){
+        var connection = require('../index.js').connection;
+
+        var result;
+        let query = `SELECT * FROM login WHERE token = '${token}'`;
+
+        try {
+            result = await connection.my_query(query);
+        } catch(err){
+            console.log(err);
+            return null;
+        }
+
+        if (result.length <= 0) return null;
+        
+        return result[0];
+    }
+
     static async getUsernameByToken(token){
         var connection = require('../index.js').connection;
 
