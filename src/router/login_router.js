@@ -27,6 +27,11 @@ class LoginRouter{
 				let loginController = new LoginController();
 				loginController.checkToken(req, res);
 			});
+		this.app.route("/refreshToken")
+			.get(function(req, res){
+				let loginController = new LoginController();
+				loginController.refreshToken(req, res);
+			});
 	}
 }
 

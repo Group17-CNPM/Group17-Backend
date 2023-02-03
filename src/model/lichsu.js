@@ -62,7 +62,7 @@ class Lichsu {
             .join(', ');
 
         let query = `INSERT INTO ${Lichsu.table} VALUE (${params})`;
-        console.log(query);
+        // console.log(query);
         try {
             result = await connection.my_query(query);
         } catch (e) {
