@@ -108,16 +108,19 @@ CREATE TABLE `login` (
   `token` varchar(255) NOT NULL,
   `deviceid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `username` varchar(255) NOT NULL,
-  `time` varchar(255) DEFAULT NULL
+  `time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `active` tinyint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `login`
 --
 
-INSERT INTO `login` (`token`, `deviceid`, `username`, `time`) VALUES
-('35574194036a0b6e43f5297240ba7ab7', NULL, 'ketoan', '2023-2-2 23:40:36'),
-('db0fcf473f6d2c1458044326c928e228', NULL, 'admin', '2023-2-2 23:46:5');
+INSERT INTO `login` (`token`, `deviceid`, `username`, `time`, `active`) VALUES
+('U2FsdGVkX1/ALMpmmOaQzrDT2eGPdak5ZJwYD2ASkBqIg9YVeUfykRzckZVG7A9/', NULL, 'admin', '2023-2-3 16:42:22', 0),
+('U2FsdGVkX1/XRa1/livKQYqzspwR3SK0/G1FzN+xoHS7bL/TaQ6G5+ivKqEFmRvu', NULL, 'admin', '2023-2-3 16:42:53', 0),
+('U2FsdGVkX1+0sR+hC7eth135aOEHCFFCYWIuJSBnSbQV/Dr67rkC7RqP7WtUorO2', NULL, 'admin', '2023-2-3 16:44:34', 0),
+('U2FsdGVkX1+avKDnjP+uWNHFcjv71n6TJ4tvrQNNh8U60R7YEE4CHOItCykI6EVZ', NULL, 'admin', '2023-2-3 16:42:40', 0);
 
 -- --------------------------------------------------------
 
