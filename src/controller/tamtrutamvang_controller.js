@@ -150,7 +150,7 @@ class TamtrutamvangController {
 
         //check params
         let {
-            token, cccd, trangthai, diachitamtrutamvang, noidungdenghi
+            token, cccd, trangthai, diachitamtrutamvang, noidungdenghi, thoigian
         } = req.query;
 
         let nhankhau = await Nhankhau.select({ cccd: cccd });
@@ -160,7 +160,7 @@ class TamtrutamvangController {
         }
         let idnhankhau = nhankhau[0].id;
 
-        if (token == undefined || idnhankhau == undefined || trangthai == undefined) {
+        if (token == undefined || idnhankhau == undefined || trangthai == undefined || thoigian == undefined) {
             Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu tham số");
             return;
         }
@@ -178,7 +178,7 @@ class TamtrutamvangController {
         }
 
         //add tamtrutamvang
-        var tamtrutamvang = new Tamtrutamvang(null, idnhankhau, trangthai, diachitamtrutamvang, noidungdenghi);
+        var tamtrutamvang = new Tamtrutamvang(null, idnhankhau, trangthai, diachitamtrutamvang, noidungdenghi, thoigian);
         result = await Tamtrutamvang.addTamtrutamvang(tamtrutamvang);
         if (result == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm tạm trú tạm vắng thất bại");
@@ -206,7 +206,7 @@ class TamtrutamvangController {
 
         //check params
         let {
-            token, cccd, trangthai, diachitamtrutamvang, noidungdenghi
+            token, cccd, trangthai, diachitamtrutamvang, noidungdenghi, thoigian
         } = req.query;
 
         if (cccd == undefined) {
@@ -236,6 +236,9 @@ class TamtrutamvangController {
         }
         if (noidungdenghi != null) {
             tamtrutamvang.noidungdenghi = noidungdenghi;
+        }
+        if (thoigian != null) {
+            tamtrutamvang.thoigian = thoigian;
         }
 
         //update tamtrutamvang

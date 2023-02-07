@@ -5,6 +5,7 @@ let Nhankhau = require("../model/nhankhau.js").Nhankhau;
 - trangthai
 - diachitamtrutamvang
 - noidungdenghi
+- thoigian
 */
 
 class Tamtrutamvang {
@@ -14,13 +15,15 @@ class Tamtrutamvang {
         idnhankhau = null,
         trangthai = null,
         diachitamtrutamvang = null,
-        noidungdenghi = null
+        noidungdenghi = null,
+        thoigian = null
     ) {
         this.id = id;
         this.idnhankhau = idnhankhau;
         this.trangthai = trangthai;
         this.diachitamtrutamvang = diachitamtrutamvang;
         this.noidungdenghi = noidungdenghi;
+        this.thoigian = thoigian
     }
 
     static fromJson(json) {
@@ -31,6 +34,7 @@ class Tamtrutamvang {
         tamtrutamvang.trangthai = json.trangthai;
         tamtrutamvang.diachitamtrutamvang = json.diachitamtrutamvang;
         tamtrutamvang.noidungdenghi = json.noidungdenghi;
+        tamtrutamvang.thoigian = json.thoigian;
         return tamtrutamvang;
     }
 
@@ -41,6 +45,7 @@ class Tamtrutamvang {
         this.trangthai = trangthai ?? this.trangthai;
         this.diachitamtrutamvang = diachitamtrutamvang ?? this.diachitamtrutamvang;
         this.noidungdenghi = noidungdenghi ?? this.noidungdenghi;
+        this.thoigian = thoigian ?? this.thoigian;
     }
 
     static getSQLValue(field) {
@@ -143,7 +148,7 @@ class Tamtrutamvang {
         var connection = require('../index.js').connection;
         var result;
 
-        let query = `INSERT INTO tamtrutamvang VALUE (null, '${tamtrutamvang.idnhankhau}', '${tamtrutamvang.trangthai}', ${this.getSQLValue(tamtrutamvang.diachitamtrutamvang)}, ${this.getSQLValue(tamtrutamvang.noidungdenghi)})`;
+        let query = `INSERT INTO tamtrutamvang VALUE (null, '${tamtrutamvang.idnhankhau}', '${tamtrutamvang.trangthai}', ${this.getSQLValue(tamtrutamvang.diachitamtrutamvang)}, ${this.getSQLValue(tamtrutamvang.noidungdenghi)}, ${this.getSQLValue(tamtrutamvang.thoigian)})`;
         try {
             result = await connection.my_query(query);
         } catch (err) {
@@ -157,7 +162,7 @@ class Tamtrutamvang {
     static async updateTamtrutamvang(tamtrutamvang) {
         var connection = require('../index.js').connection;
         var result;
-        let query = `UPDATE tamtrutamvang SET trangthai = ${tamtrutamvang.trangthai}, diachitamtrutamvang = ${this.getSQLValue(tamtrutamvang.diachitamtrutamvang)}, noidungdenghi = ${this.getSQLValue(tamtrutamvang.noidungdenghi)} WHERE id = ${tamtrutamvang.id}`;
+        let query = `UPDATE tamtrutamvang SET trangthai = ${tamtrutamvang.trangthai}, diachitamtrutamvang = ${this.getSQLValue(tamtrutamvang.diachitamtrutamvang)}, noidungdenghi = ${this.getSQLValue(tamtrutamvang.noidungdenghi)}, thoigian = ${this.getSQLValue(tamtrutamvang.thoigian)} WHERE id = ${tamtrutamvang.id}`;
         try {
             result = await connection.my_query(query);
         } catch (err) {

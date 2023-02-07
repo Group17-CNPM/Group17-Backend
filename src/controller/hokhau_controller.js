@@ -4,6 +4,7 @@ const { Nhankhau } = require("../model/nhankhau.js");
 let HoKhau = require("../model/hokhau.js").HoKhau;
 let Response = require('../utils/response.js').Response;
 let LoginController = require('../controller/login_controller.js').LoginController;
+let Lichsu = require('../model/lichsu.js').Lichsu;
 
 class HokhauController {
     constructor() { }
@@ -208,24 +209,34 @@ class HokhauController {
             }
         }
 
+        // check sohokhau of chuho existed
+        if (nhankhau[0].sohokhau != null) {
+            Response.response(res, Response.ResponseCode.ERROR, "sohokhau is already existed ", req.query, "Chủ hộ đang ở trong hộ khẩu khác rồi");
+            return;
+        }
+
         //check date
         if (!this.checkDate(ngaylamhokhau)) {
             Response.response(res, Response.ResponseCode.ERROR, "ngaylamhokhau is invalid", req.query);
             return;
         }
 
-        nhankhau[0].quanhevoichuho = "Là chủ hộ";
-        result = await Nhankhau.update(nhankhau[0], { id: nhankhau[0].id });
-        if (result == null) {
-            Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm hộ khẩu thất bại ở khâu update vai trò nhân khẩu");
-            return;
-        }
+
 
         //add ho khau
         var hokhau = new HoKhau(null, idchuho, sonha, duong, phuong, quan, ngaylamhokhau);
         result = await HoKhau.addHokhau(hokhau);
         if (result == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm hộ khẩu thất bại");
+            return;
+        }
+
+        //update cho chuho
+        nhankhau[0].quanhevoichuho = "Là chủ hộ";
+        nhankhau[0].sohokhau = result.insertId;
+        result = await Nhankhau.update(nhankhau[0], { id: nhankhau[0].id });
+        if (result == null) {
+            Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm hộ khẩu thất bại ở khâu update vai trò nhân khẩu");
             return;
         }
 
@@ -337,6 +348,12 @@ class HokhauController {
             return;
         }
 
+        //update quanhevoichuho cua nhankhauold
+        result = await Nhankhau.update({ quanhevoichuho: null }, { id: nhankhauOld[0].id });
+        if (result == null) {
+            Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Update chủ thất bại ở khâu update vai trò chủ hộ cũ");
+            return;
+        }
 
 
         //check chuho moi existed
@@ -346,10 +363,10 @@ class HokhauController {
             return;
         }
 
-        //check hokhau cua chu moi existed
-        let hokhauMoi = await HoKhau.getHokhauByCccdChuho(nhankhauNew[0]);
-        if (hokhauMoi != null) {
-            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Existed hokhau of new chuho", req.query, "Chủ hộ mới đã có hộ khẩu rồi");
+        //check hokhau cua chuhomoi khong ton tai hoac chuhomoi khong nam trong hokhau nay
+        // let hokhauMoi = await HoKhau.getHokhauByCccdChuho(nhankhauNew[0]);
+        if (nhankhauNew[0].sohokhau == null || nhankhauNew[0].sohokhau != nhankhauOld[0].sohokhau) {
+            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Existed hokhau of new chuho", req.query, "Chủ hộ mới không nằm trong hộ khẩU hiện tại");
             return;
         }
 
@@ -401,6 +418,24 @@ class HokhauController {
             Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd là chủ hộ");
             return;
         }
+
+        //update sohokhau cua cac nhankhau trong hokhau
+        let listNhankhau = await Nhankhau.select({ sohokhau: hokhau.sohokhau });
+        if (listNhankhau == null || listNhankhau.length <= 0) {
+            Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Lỗi update nhân khẩu trong hộ khẩu");
+            return;
+        }
+        for (let element of listNhankhau) {
+            element.sohokhau = null;
+            element.quanhevoichuho = null;
+            result = await Nhankhau.update(element, { id: element.id });
+            if (result == null) {
+                Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Lỗi update nhân khẩu trong hộ khẩu");
+                return;
+            }
+        }
+        await Lichsu.delete({ sohokhau: hokhau.sohokhau })
+
 
         //delete hokhau
         result = await HoKhau.deleteHokhauByCccd(nhankhau[0]);
