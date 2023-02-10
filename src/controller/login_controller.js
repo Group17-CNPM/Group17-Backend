@@ -7,6 +7,7 @@ let Utils = require('../utils/utils.js').Utils;
 
 
 class LoginController{
+	static EXPIRE = 48 * 60 * 60 * 1000; // 2 days to miliseconds
 	constructor(){}
 
 	/*
@@ -158,10 +159,9 @@ class LoginController{
 		// console.log(login);
 
 		// check token is expired
-		let expire = 24 * 60 * 60 * 1000; // 24 hours to miliseconds
 		let loginTime = Utils.getUTCDateFromString(login.time).getTime();
 		let now = new Date().getTime();
-		if (now - loginTime > expire){
+		if (now - loginTime > LoginController.EXPIRE){
 			Response.response(res, Response.ResponseCode.ERROR, "Token is expired", req.query, "Token đã hết hạn");
 			return false;
 		}
