@@ -30,6 +30,7 @@ class Response {
 		if (message != null) responseData.message = message;
 		if (data != null) responseData.data = data;
 		if (detail != null) responseData.detail = detail;
+		res.setHeader('Access-Control-Allow-Origin', '*');
 		res.json(responseData);
 	}
 }
