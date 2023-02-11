@@ -5,6 +5,7 @@ let Nhankhau = require("../model/nhankhau.js").Nhankhau;
 let Tamtrutamvang = require("../model/tamtrutamvang.js").Tamtrutamvang;
 let Response = require('../utils/response.js').Response;
 let LoginController = require('../controller/login_controller.js').LoginController;
+let Utils = require('../utils/utils.js').Utils;
 
 
 class TamtrutamvangController {
@@ -24,6 +25,8 @@ class TamtrutamvangController {
     route: GET [domain]/getListTamtrutamvang
     query: {
         token: "xxx"
+        start: 12,
+        end: 13
     }
     */
     async getListTamtrutamvang(req, res) {
@@ -31,7 +34,21 @@ class TamtrutamvangController {
         let result = await LoginController.checkToken(req, res);
         if (!result) return;
 
-        let listTamtrutamvang = await Tamtrutamvang.selectAll();
+        let {start, length} = req.query;
+        if (start != null && !Utils.checkNumber(start)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+        if (length != null && !Utils.checkNumber(length)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+        let pagination = null;
+        if (start != null && length != null){
+            pagination = {
+                start: start,
+                length: length
+            }
+        }
+        console.log(pagination);
+
+        let listTamtrutamvang = await Tamtrutamvang.selectAll(pagination);
 
         if (listTamtrutamvang == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);

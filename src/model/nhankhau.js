@@ -90,7 +90,7 @@ class Nhankhau {
         return result;
     }
     // Read
-    static async select(nhankhau, keys = null) {
+    static async select(nhankhau, keys = null, pagination = null) {
         let connection = require('../index.js').connection;
         let result, selectFields, whereParams;
 
@@ -104,7 +104,10 @@ class Nhankhau {
             .map(key => Utils.getEquation(key, nhankhau[key]))
             .join(' AND ');
 
-        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""};`;
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
+
+        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ${paginationString};`;
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -138,7 +141,7 @@ class Nhankhau {
 
         return Nhankhau.from_json(result[0]);
     }
-    static async search(nhankhau, keys = null) {
+    static async search(nhankhau, keys = null, pagination = null) {
         let connection = require('../index.js').connection;
         let result, selectFields, whereParams;
 
@@ -154,8 +157,10 @@ class Nhankhau {
             .join(' AND ');
 
         // console.log(Object.keys(nhankhau));
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
 
-        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""};`;
+        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ${paginationString};`;
         try {
             result = await connection.my_query(query);
         } catch (e) {

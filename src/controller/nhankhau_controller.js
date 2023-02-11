@@ -27,6 +27,8 @@ class NhankhauController {
 		ngaydangkythuongtru: "2022-04-22"
 		ngaythemnhankhau: "2022-04-22"
 		ghichu: "Không có ghi chú"
+		start: 12
+		length: 13
 	required params: token
 	optional params: others params
 	}
@@ -40,8 +42,20 @@ class NhankhauController {
 		let {
 			token, idnhankhau, hoten, ngaysinh, gioitinh, quequan, dantoc, tongiao,
 			sohokhau, quanhevoichuho, cccd, ngaycap, noicap, nghenghiep,
-			ngaydangkythuongtru, ngaythemnhankhau, ghichu
+			ngaydangkythuongtru, ngaythemnhankhau, ghichu, start, length
 		} = req.query;
+
+		if (start != null && !Utils.checkNumber(start)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+        if (length != null && !Utils.checkNumber(length)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+        let pagination = null;
+        if (start != null && length != null){
+        	pagination = {
+        		start: start,
+        		length: length
+        	}
+        }
 
 		var nhankhau = new Nhankhau({
 			idnhankhau: idnhankhau, hoten: hoten, ngaysinh: ngaysinh, gioitinh: gioitinh, quequan: quequan, dantoc: dantoc,
@@ -51,7 +65,7 @@ class NhankhauController {
 		});
 
 		// search
-		let listNhankhau = await Nhankhau.search(nhankhau);
+		let listNhankhau = await Nhankhau.search(nhankhau, null, pagination);
 
 		if (listNhankhau == null) {
 			Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
@@ -66,6 +80,8 @@ class NhankhauController {
 	route: GET [domain]/getListNhankhau
 	query: {
 		token: "xxx"
+		start: 123,
+		length: 12
 	}
 	*/
 	async getListNhankhau(req, res) {
@@ -73,7 +89,20 @@ class NhankhauController {
 		let result = await LoginController.checkToken(req, res);
 		if (!result) return;
 
-		let listNhankhau = await Nhankhau.select({});
+		let {start, length} = req.query;
+		if (start != null && !Utils.checkNumber(start)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+        if (length != null && !Utils.checkNumber(length)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+        let pagination = null;
+        if (start != null && length != null){
+        	pagination = {
+        		start: start,
+        		length: length
+        	}
+        }
+
+		let listNhankhau = await Nhankhau.select({}, null, pagination);
 
 		if (listNhankhau == null) {
 			Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);

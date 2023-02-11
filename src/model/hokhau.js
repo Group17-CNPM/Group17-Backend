@@ -70,12 +70,15 @@ class HoKhau {
         return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()} ${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}`;
     }
 
-    static async selectAll() {
+    static async selectAll(pagination = null) {
         var connection = require("../index.js").connection;
         var result;
 
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
+
         try {
-            let query = `SELECT * FROM hokhau`;
+            let query = `SELECT * FROM hokhau ${paginationString}`;
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);

@@ -5,6 +5,7 @@ let HoKhau = require("../model/hokhau.js").HoKhau;
 let Response = require('../utils/response.js').Response;
 let LoginController = require('../controller/login_controller.js').LoginController;
 let Lichsu = require('../model/lichsu.js').Lichsu;
+let Utils = require('../utils/utils.js').Utils;
 
 class HokhauController {
     constructor() { }
@@ -22,7 +23,10 @@ class HokhauController {
     /*
     route: GET [domain]/getListHokhau
     query: {
-        token: "xxx"
+        token: "xxx",
+        start: 12,
+        length: 2
+    optional: start, length
     }
     */
     async getListHoKhau(req, res) {
@@ -30,7 +34,21 @@ class HokhauController {
         let result = await LoginController.checkToken(req, res);
         if (!result) return;
 
-        let listHokhau = await HoKhau.selectAll();
+        let {start, length} = req.query;
+        if (start != null && !Utils.checkNumber(start)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+        if (length != null && !Utils.checkNumber(length)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+        let pagination = null;
+        if (start != null && length != null){
+            pagination = {
+                start: start,
+                length: length
+            }
+        }
+        console.log(pagination);
+
+        let listHokhau = await HoKhau.selectAll(pagination);
 
         if (listHokhau == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);

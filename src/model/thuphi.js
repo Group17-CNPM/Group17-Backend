@@ -68,7 +68,7 @@ class Thuphi {
         return result;
     }
     // Read
-    static async select(thuphi, keys = null) {
+    static async select(thuphi, keys = null, pagination = null) {
         let connection = require('../index.js').connection;
         let result, selectFields, whereParams;
 
@@ -82,7 +82,10 @@ class Thuphi {
             .map(key => Utils.getEquation(key, thuphi[key]))
             .join(' AND ');
 
-        let query = `SELECT ${selectFields} FROM ${Thuphi.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ORDER BY ngaynop ASC;`;
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
+
+        let query = `SELECT ${selectFields} FROM ${Thuphi.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ORDER BY ngaynop ASC ${paginationString};`;
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -116,7 +119,7 @@ class Thuphi {
 
         return Thuphi.from_json(result[0]);
     }
-    static async search(thuphi, keys = null) {
+    static async search(thuphi, keys = null, pagination = null) {
         let connection = require('../index.js').connection;
         let result, selectFields, whereParams;
 
@@ -131,9 +134,10 @@ class Thuphi {
             .map(key => Utils.getSearchEquation(key, thuphi[key], false))
             .join(' AND ');
 
-        // console.log(Object.keys(thuphi));
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
 
-        let query = `SELECT ${selectFields} FROM ${Thuphi.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""};`;
+        let query = `SELECT ${selectFields} FROM ${Thuphi.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ${paginationString};`;
         try {
             result = await connection.my_query(query);
         } catch (e) {

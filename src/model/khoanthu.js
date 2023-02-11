@@ -67,7 +67,7 @@ class Khoanthu {
         return result;
     }
     // Read
-    static async select(khoanthu, keys = null) {
+    static async select(khoanthu, keys = null, pagination = null) {
         let connection = require('../index.js').connection;
         let result, selectFields, whereParams;
 
@@ -81,7 +81,10 @@ class Khoanthu {
             .map(key => Utils.getEquation(key, khoanthu[key]))
             .join(' AND ');
 
-        let query = `SELECT ${selectFields} FROM ${Khoanthu.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ORDER BY ngaytao ASC;`;
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
+
+        let query = `SELECT ${selectFields} FROM ${Khoanthu.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ORDER BY ngaytao ASC ${paginationString};`;
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -97,7 +100,7 @@ class Khoanthu {
 
         return list;
     }
-    static async getById(id, keys = null) {
+    static async getById(id, keys = null, pagination = null) {
         let connection = require('../index.js').connection;
         let result, selectFields = ``;
         if (keys == null || keys.length <= 0) {
@@ -115,7 +118,7 @@ class Khoanthu {
 
         return Khoanthu.from_json(result[0]);
     }
-    static async search(khoanthu, keys = null) {
+    static async search(khoanthu, keys = null, pagination = null) {
         let connection = require('../index.js').connection;
         let result, selectFields, whereParams;
 
@@ -130,9 +133,10 @@ class Khoanthu {
             .map(key => Utils.getSearchEquation(key, khoanthu[key], false))
             .join(' AND ');
 
-        // console.log(Object.keys(khoanthu));
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
 
-        let query = `SELECT ${selectFields} FROM ${Khoanthu.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""};`;
+        let query = `SELECT ${selectFields} FROM ${Khoanthu.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ${paginationString};`;
         try {
             result = await connection.my_query(query);
         } catch (e) {

@@ -66,7 +66,9 @@ class ThuphiController{
 	/*
 	route: GET [domain]/getListKhoanthu
 	query: {
-		token: "xxx"
+		token: "xxx",
+		start: "xxx",
+		length: "xxx"
 	}
 	*/
 	async getListKhoanthu(req, res){
@@ -74,7 +76,20 @@ class ThuphiController{
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
-		let listKhoanthu = await Khoanthu.select({});
+		let {start, length} = req.query;
+		if (start != null && !Utils.checkNumber(start)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+        if (length != null && !Utils.checkNumber(length)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+        let pagination = null;
+        if (start != null && length != null){
+        	pagination = {
+        		start: start,
+        		length: length
+        	}
+        }
+
+		let listKhoanthu = await Khoanthu.select({}, null, pagination);
 		if (listKhoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 		return Response.response(res, Response.ResponseCode.OK, "Success", listKhoanthu);
@@ -90,6 +105,8 @@ class ThuphiController{
 		tenkhoanthu : "xxx"
 		batbuoc : "xxx"
 		ghichu : "xxx"
+		start: 12
+		length: 12
 	options params: all except token
 	}
 	*/
@@ -109,6 +126,19 @@ class ThuphiController{
 		if (batbuoc != null && batbuoc != "0" && batbuoc != "1")
 			return Response.response(res, Response.ResponseCode.ERROR, "batbuoc is invalid", req.query);
 
+		let {start, length} = req.query;
+		if (start != null && !Utils.checkNumber(start)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+        if (length != null && !Utils.checkNumber(length)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+        let pagination = null;
+        if (start != null && length != null){
+        	pagination = {
+        		start: start,
+        		length: length
+        	}
+        }
+
 		let khoanthu = new Khoanthu({
 			id: idkhoanthu,
 			ngaytao: ngaytao,
@@ -118,7 +148,7 @@ class ThuphiController{
 			ghichu: ghichu	
 		});
 
-		let listKhoanthu = await Khoanthu.search(khoanthu);
+		let listKhoanthu = await Khoanthu.search(khoanthu, null, pagination);
 		if (listKhoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 		return Response.response(res, Response.ResponseCode.OK, "Successes", listKhoanthu);
@@ -469,6 +499,8 @@ class ThuphiController{
 		nguoinop: "xxx"
 		ngaynop: "xxx"
 		ghichu: "xxx"
+		start: 12
+		length: 12
 	options params: all except token
 	}
 	*/
@@ -489,7 +521,20 @@ class ThuphiController{
 			ghichu: ghichu
 		});
 
-		let listThuphi = await Thuphi.search(thuphi);
+		let {start, length} = req.query;
+		if (start != null && !Utils.checkNumber(start)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+        if (length != null && !Utils.checkNumber(length)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+        let pagination = null;
+        if (start != null && length != null){
+        	pagination = {
+        		start: start,
+        		length: length
+        	}
+        }
+
+		let listThuphi = await Thuphi.search(thuphi, null, pagination);
 		if (listThuphi == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 		return Response.response(res, Response.ResponseCode.OK, "Success", listThuphi);

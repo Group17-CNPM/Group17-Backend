@@ -62,12 +62,15 @@ class Tamtrutamvang {
         return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
     }
 
-    static async selectAll() {
+    static async selectAll(pagination = null) {
         var connection = require("../index.js").connection;
         var result;
 
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
+
         try {
-            let query = `SELECT * FROM tamtrutamvang`;
+            let query = `SELECT * FROM tamtrutamvang ${paginationString}`;
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);
