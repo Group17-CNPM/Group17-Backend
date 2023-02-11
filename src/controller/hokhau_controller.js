@@ -37,6 +37,18 @@ class HokhauController {
             return;
         }
 
+        let nhankhau;
+        // for (hokhau of listHokhau) {
+        //     nhankhau = await Nhankhau.select({ id: hokhau.idchuho });
+        //     if (nhankhau == null) continue;
+        //     hokhau["hotenchuho"] = nhankhau[0].hoten
+        // }
+        for (let i = 0; i < listHokhau.length; i++) {
+            nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
+            if (nhankhau == null) continue;
+            listHokhau[i]["hotenchuho"] = nhankhau[0].hoten
+        }
+
         Response.response(res, Response.ResponseCode.OK, "Success", listHokhau);
     }
 
@@ -230,6 +242,7 @@ class HokhauController {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm hộ khẩu thất bại");
             return;
         }
+        hokhau.sohokhau = result.insertId
 
         //update cho chuho
         nhankhau[0].quanhevoichuho = "Là chủ hộ";

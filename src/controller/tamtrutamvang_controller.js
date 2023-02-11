@@ -185,6 +185,8 @@ class TamtrutamvangController {
             return;
         }
 
+        tamtrutamvang.id = result.insertId
+
         Response.response(res, Response.ResponseCode.OK, "Success", tamtrutamvang, "Đã thêm tạm trú tạm vắng");
     }
 
