@@ -465,6 +465,8 @@ class ThuphiController{
 	query: {
 		token: "xxx"
 		idkhoanthu: "xxx"
+		start: 1
+		lenth: 2
 	}
 	*/
 	async getListThuphi(req, res){
@@ -477,12 +479,25 @@ class ThuphiController{
 		if (idkhoanthu == undefined)
 			return Response.response(res, Response.ResponseCode.ERROR, "Lack of idkhoanthu", req.query);
 
+		let {start, length} = req.query;
+		if (start != null && !Utils.checkNumber(start)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+        if (length != null && !Utils.checkNumber(length)) 
+            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+        let pagination = null;
+        if (start != null && length != null){
+        	pagination = {
+        		start: start,
+        		length: length
+        	}
+        }
+
 		// check if khoan thu is existed
 		let khoanthu = await Khoanthu.getById(idkhoanthu);
 		if (khoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu is not existed", req.query);
 
-		let listThuphi = await Thuphi.select({idkhoanthu : idkhoanthu});
+		let listThuphi = await Thuphi.select({idkhoanthu : idkhoanthu}, null, pagination);
 		if (listThuphi == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 		return Response.response(res, Response.ResponseCode.OK, "Success", listThuphi);
