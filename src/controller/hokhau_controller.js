@@ -34,13 +34,13 @@ class HokhauController {
         let result = await LoginController.checkToken(req, res);
         if (!result) return;
 
-        let {start, length} = req.query;
-        if (start != null && !Utils.checkNumber(start)) 
+        let { start, length } = req.query;
+        if (start != null && !Utils.checkNumber(start))
             return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length)) 
+        if (length != null && !Utils.checkNumber(length))
             return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
         let pagination = null;
-        if (start != null && length != null){
+        if (start != null && length != null) {
             pagination = {
                 start: start,
                 length: length
@@ -266,6 +266,9 @@ class HokhauController {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Thêm hộ khẩu thất bại ở khâu update vai trò nhân khẩu");
             return;
         }
+
+        hokhau["hotenchuho"] = nhankhau[0].hoten
+        hokhau["cccdchuho"] = nhankhau[0].cccd
 
         Response.response(res, Response.ResponseCode.OK, "Success", hokhau, "Đã thêm hộ khẩu");
     }
