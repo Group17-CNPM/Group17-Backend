@@ -38,15 +38,11 @@ class HokhauController {
         }
 
         let nhankhau;
-        // for (hokhau of listHokhau) {
-        //     nhankhau = await Nhankhau.select({ id: hokhau.idchuho });
-        //     if (nhankhau == null) continue;
-        //     hokhau["hotenchuho"] = nhankhau[0].hoten
-        // }
         for (let i = 0; i < listHokhau.length; i++) {
             nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
             if (nhankhau == null) continue;
             listHokhau[i]["hotenchuho"] = nhankhau[0].hoten
+            listHokhau[i]["cccdchuho"] = nhankhau[0].cccd
         }
 
         Response.response(res, Response.ResponseCode.OK, "Success", listHokhau);
