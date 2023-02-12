@@ -54,7 +54,7 @@ class Model{
 		return result;
 	}
 	// Read
-	static async select(model, keys = null){
+	static async select(model, keys = null, pagination = null){
 		let connection = require('../index.js').connection;
 		let result, selectFields, whereParams;
 
@@ -68,7 +68,10 @@ class Model{
 		.map(key => Model.getSelectString(key, model[key]))
 		.join(" AND ");
 
-		let query = `SELECT ${selectFields} FROM ${Model.table} WHERE ${whereParams}; `;		
+		let paginationString = "";
+		if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET = ${pagination.start} `;
+
+		let query = `SELECT ${selectFields} FROM ${Model.table} WHERE ${whereParams} ${paginationString};`;		
 		try{ 
 			result = await connection.my_query(query);
 		} catch (e){

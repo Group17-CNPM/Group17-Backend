@@ -1,85 +1,63 @@
 var Utils = require('../utils/utils.js').Utils;
 /*
 - id
-- hoten
-- ngaysinh
-- gioitinh
-- quequan
-- dantoc
-- tongiao
+- idkhoanthu
 - sohokhau
-- quanhevoichuho
-- cccd
-- ngaycap
-- noicap
-- nghenghiep
-- ngaydangkythuongtru
-- ngaythemnhankhau
+- sotien
+- nguoinop
+- ngaynop
 - ghichu
 */
 
-class Nhankhau {
+class Thuphi {
     // static properties
-    static table = "nhankhau";
+    static table = "danhsachnopphi";
     static array_key = [
-        "id", "hoten", "ngaysinh", "gioitinh", "quequan", "dantoc", "tongiao",
-        "sohokhau", "quanhevoichuho",
-        "cccd", "capngay", "noicap",
-        "nghenghiep", "ngaydangkythuongtru", "ngaythemnhankhau", "ghichu"
+        "id", "idkhoanthu", "sohokhau", "sotien", "nguoinop", "ngaynop", "ghichu"
     ];
     // non static methods => Object
-    constructor(nhankhau) {
-        for (let key of Nhankhau.keys()) {
-            this[key] = nhankhau[key];
-        }
+    constructor(thuphi) {
+        this.copy_from(thuphi);
     }
-    copy_from(nhankhau) {
-        if (nhankhau == null) return;
-        for (let key of Nhankhau.keys()) {
-            this[key] = nhankhau[key] ?? this[key];
+    copy_from(thuphi) {
+        if (thuphi == null) return;
+        for (let key of Thuphi.keys()) {
+            this[key] = thuphi[key] ?? this[key];
         }
     }
     async save() {
-        let nhankhau = await Nhankhau.getById(this.id);
-        if (nhankhau == null) {
+        let thuphi = await Thuphi.getById(this.id);
+        if (thuphi == null) {
             // insert if not existed
-            return await Nhankhau.insert(this);
+            return await Thuphi.insert(this);
         } else {
             // update if existed
-            return await Nhankhau.update(this, { id: this.id });
+            return await Thuphi.update(this, { id: this.id });
         }
     }
     async delete() {
-        return await Nhankhau.delete(this);
+        return await Thuphi.delete(this);
     }
 
     // static methods => Table
-    static keys() { return Nhankhau.array_key; }
+    static keys() { return Thuphi.array_key; }
     static from_json(json) {
         if (json == null) return null;
-        let nhankhau = new Nhankhau(json);
-        // if (Object.keys(json).includes("ngaysinh"))
-        //     nhankhau.ngaysinh = Utils.getUTCDateFromString(nhankhau.ngaysinh);
-        // if (Object.keys(json).includes("capngay"))
-        //     nhankhau.capngay = Utils.getUTCDateFromString(nhankhau.capngay);
-        // if (Object.keys(json).includes("ngaydangkythuongtru"))
-        //     nhankhau.ngaydangkythuongtru = Utils.getUTCDateFromString(nhankhau.ngaydangkythuongtru);
-        // if (Object.keys(json).includes("ngaythemnhankhau"))
-        //     nhankhau.ngaythemnhankhau = Utils.getUTCDateFromString(nhankhau.ngaythemnhankhau);
-        return nhankhau;
+        let thuphi = new Thuphi(json);
+        return thuphi;
     }
 
 
 // CRUD:    
     // Create
-    static async insert(nhankhau) {
+    static async insert(thuphi) {
         let connection = require('../index.js').connection;
         let params, result;
-        params = Nhankhau.keys()
-            .map(key => Utils.getSQLValue(nhankhau[key]))
+        params = Thuphi.keys()
+            .map(key => Utils.getSQLValue(thuphi[key]))
             .join(', ');
 
-        let query = `INSERT INTO ${Nhankhau.table} VALUE (${params})`;
+        let query = `INSERT INTO ${Thuphi.table} VALUE (${params})`;
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -90,7 +68,7 @@ class Nhankhau {
         return result;
     }
     // Read
-    static async select(nhankhau, keys = null, pagination = null) {
+    static async select(thuphi, keys = null, pagination = null) {
         let connection = require('../index.js').connection;
         let result, selectFields, whereParams;
 
@@ -100,14 +78,14 @@ class Nhankhau {
             selectFields = keys.join(', ');
         }
 
-        whereParams = Object.keys(nhankhau)
-            .map(key => Utils.getEquation(key, nhankhau[key]))
+        whereParams = Object.keys(thuphi)
+            .map(key => Utils.getEquation(key, thuphi[key]))
             .join(' AND ');
 
         let paginationString = "";
         if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
 
-        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ${paginationString};`;
+        let query = `SELECT ${selectFields} FROM ${Thuphi.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ORDER BY ngaynop ASC ${paginationString};`;
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -118,7 +96,7 @@ class Nhankhau {
         let list = [];
         // console.log(result);
         result.forEach(function (element) {
-            list.push(Nhankhau.from_json(element));
+            list.push(Thuphi.from_json(element));
         });
 
         return list;
@@ -131,7 +109,7 @@ class Nhankhau {
         } else {
             selectFields = keys.join(', ');
         }
-        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE id = ${id}`;
+        let query = `SELECT ${selectFields} FROM ${Thuphi.table} WHERE id = ${id}`;
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -139,9 +117,9 @@ class Nhankhau {
             return null;
         }
 
-        return Nhankhau.from_json(result[0]);
+        return Thuphi.from_json(result[0]);
     }
-    static async search(nhankhau, keys = null, pagination = null) {
+    static async search(thuphi, keys = null, pagination = null) {
         let connection = require('../index.js').connection;
         let result, selectFields, whereParams;
 
@@ -151,16 +129,15 @@ class Nhankhau {
             selectFields = keys.join(', ');
         }
 
-        whereParams = Object.keys(nhankhau)
-            .filter(key => nhankhau[key])
-            .map(key => Utils.getSearchEquation(key, nhankhau[key], false))
+        whereParams = Object.keys(thuphi)
+            .filter(key => thuphi[key])
+            .map(key => Utils.getSearchEquation(key, thuphi[key], false))
             .join(' AND ');
 
-        // console.log(Object.keys(nhankhau));
         let paginationString = "";
         if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
 
-        let query = `SELECT ${selectFields} FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ${paginationString};`;
+        let query = `SELECT ${selectFields} FROM ${Thuphi.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ${paginationString};`;
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -170,29 +147,29 @@ class Nhankhau {
 
         let list = [];
         result.forEach(function (element) {
-            list.push(Nhankhau.from_json(element));
+            list.push(Thuphi.from_json(element));
         });
 
         return list;
     }
     // Update
-    static async update(nhankhau, where) {
-        if (nhankhau == null || where == null) {
+    static async update(thuphi, where) {
+        if (thuphi == null || where == null) {
             throw "Không đủ tham số cho hàm update";
         }
         let connection = require('../index.js').connection;
         let result;
         let setParams, whereParams;
 
-        setParams = Object.keys(nhankhau)
-            .map(key => `${key} = ${Utils.getSQLValue(nhankhau[key])}`)
+        setParams = Object.keys(thuphi)
+            .map(key => `${key} = ${Utils.getSQLValue(thuphi[key])}`)
             .join(', ');
 
         whereParams = Object.keys(where).
             map(key => Utils.getEquation(key, where[key], true))
             .join(', ');
 
-        let query = `UPDATE ${Nhankhau.table} SET ${setParams} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;
+        let query = `UPDATE ${Thuphi.table} SET ${setParams} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -203,14 +180,14 @@ class Nhankhau {
         return result;
     }
     // Delete
-    static async delete(nhankhau) {
+    static async delete(thuphi) {
         let connection = require('../index.js').connection;
         let result;
-        let whereParams = Object.keys(nhankhau)
-            .map(key => Utils.getEquation(key, nhankhau[key], true))
+        let whereParams = Object.keys(thuphi)
+            .map(key => Utils.getEquation(key, thuphi[key], true))
             .join(', ');
 
-        let query = `DELETE FROM ${Nhankhau.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;
+        let query = `DELETE FROM ${Thuphi.table} WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""}`;
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -223,4 +200,4 @@ class Nhankhau {
 }
 
 
-module.exports = { Nhankhau };
+module.exports = { Thuphi };

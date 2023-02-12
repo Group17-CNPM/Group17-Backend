@@ -71,6 +71,19 @@ class Utils{
         role = String(role);
         return role == "1" || role == "2";
     }
+    static isNullOrEmpty(value){
+        if (value == null) return true;
+        if (value == "") return true;
+        return false;
+    }
+    static isExistNullOrEmpty(...params){
+        for (let value of params){
+            if (Utils.isExistNullOrEmpty(value)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 

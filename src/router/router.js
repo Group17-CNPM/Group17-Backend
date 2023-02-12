@@ -6,6 +6,7 @@ var NhankhauRouter = require('../router/nhankhau_router.js').NhankhauRouter;
 var LichsuRouter = require('../router/lichsu_router.js').LichsuRouter;
 var HokhauRouter = require('../router/hokhau_router.js').HokhauRouter;
 var TamtrutamvangRouter = require('../router/tamtrutamvang_router.js').TamtrutamvangRouter;
+var ThuphiRouter = require('../router/thuphi_router.js').ThuphiRouter;
 
 class Router {
 	constructor(app) {
@@ -16,6 +17,7 @@ class Router {
 		this.lichsuRouter = new LichsuRouter(app);
 		this.hokhauRouter = new HokhauRouter(app);
 		this.tamtrutamvangRouter = new TamtrutamvangRouter(app);
+		this.thuphiRouter = new ThuphiRouter(app);
 	}
 	route() {
 		this.loginRouter.route();
@@ -24,6 +26,7 @@ class Router {
 		this.lichsuRouter.route();
 		this.hokhauRouter.route();
 		this.tamtrutamvangRouter.route();
+		this.thuphiRouter.route();
 	}
 }
 
