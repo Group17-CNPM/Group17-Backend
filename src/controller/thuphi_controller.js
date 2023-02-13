@@ -334,17 +334,29 @@ class ThuphiController{
 			return Response.response(res, Response.ResponseCode.ERROR, "sotien is invalid", req.query);
 
 		// check if khoanthu and sohokhau is existed
-		let [khoanthu, hokhau] = await Promise.all([
+		let [khoanthu, hokhau, thuphi] = await Promise.all([
 			await Khoanthu.getById(idkhoanthu),
-			await HoKhau.getHokhauBySoHokhau(sohokhau)
+			await HoKhau.getHokhauBySoHokhau(sohokhau),
+			await Thuphi.select({sohokhau: sohokhau})
 		]);
+
 		if (khoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu is not existed", req.query);
 		if (hokhau == null) 
 			return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);
 
+		if (thuphi != null && thuphi.length > 0){
+			thuphi = thuphi[0];
+			thuphi.sotien = Number(thuphi.sotien) + Number(sotien);
+			let result = await thuphi.save(thuphi);
+
+			if (result == null)
+				return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
+			return Response.response(res, Response.ResponseCode.OK, "Success", thuphi);
+		}
+
 		// create object
-		let thuphi = new Thuphi({
+		thuphi = new Thuphi({
 			id: null,
 			idkhoanthu: idkhoanthu,
 			sohokhau: sohokhau,
