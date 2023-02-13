@@ -59,7 +59,13 @@ class ThuphiController{
 		if (khoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Not exist khoanthu", req.query, "Không tồn tại khoanthu");
 
+		let sum_money = 0;
+		for (let thuphi of listThuphi){
+			sum_money = sum_money + Number(thuphi.sotien);
+		}
+
 		khoanthu.listThuphi = listThuphi;
+		khoanthu["sum_money"] = sum_money;
 		return Response.response(res, Response.ResponseCode.OK, "Success", khoanthu);
 	}
 

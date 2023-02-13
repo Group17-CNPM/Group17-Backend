@@ -23,6 +23,9 @@ class Utils{
     
     static getSQLValue(value) {
         if (value == null) return "null";
+        value = String(value);
+        value = value.replace('\'', '');
+        value = value.replace('\"', '');
         return `'${value}'`;
     }
     static getEquation(key, value, acceptNull = false){
@@ -32,6 +35,9 @@ class Utils{
             } 
             return "";
         }
+        value = String(value);
+        value = value.replace('\'', '');
+        value = value.replace('\"', '');
         return ` (${key} = '${value}') `;
     }
     static getSearchEquation(key, value, acceptNull = false) {
@@ -41,6 +47,9 @@ class Utils{
             } 
             return "";
         }
+        value = String(value);
+        value = value.replace('\'', '');
+        value = value.replace('\"', '');
         return ` (INSTR(${key}, '${value}') > 0 OR INSTR('${value}', ${key}) > 0 OR ${key} = '${value}') `;
     }
 
@@ -83,6 +92,10 @@ class Utils{
             }
         }
         return false;
+    }
+
+    static random(min, max){
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }
 

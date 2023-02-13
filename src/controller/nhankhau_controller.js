@@ -3,6 +3,9 @@ let Nhankhau = require('../model/nhankhau.js').Nhankhau;
 let Response = require('../utils/response.js').Response;
 let LoginController = require('../controller/login_controller.js').LoginController;
 let Utils = require('../utils/utils.js').Utils;
+let HoKhau = require('../model/hokhau.js').HoKhau;
+let Tamtrutamvang = require('../model/tamtrutamvang.js').Tamtrutamvang;
+let Lichsu = require('../model/lichsu.js').Lichsu;
 
 class NhankhauController {
 	constructor() { }
@@ -259,7 +262,12 @@ class NhankhauController {
 		}
 
 		// check sohokhau is existed:
-		// chua lam model hokhau
+		if (sohokhau != null){
+			let hokhau = await HoKhau.getHokhauBySoHokhau(sohokhau);
+			if (hokhau == null) {
+				return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);	
+			}
+		}
 
 		// check fields:
 		if (hoten.length <= 0) {
@@ -375,7 +383,12 @@ class NhankhauController {
 		}
 
 		// check sohokhau is existed:
-		// chua lam model hokhau
+		if (sohokhau != null){
+			let hokhau = await HoKhau.getHokhauBySoHokhau(sohokhau);
+			if (hokhau == null) {
+				return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);	
+			}
+		}
 
 		// check fields:
 		if (hoten != null && hoten.length <= 0) {
@@ -451,14 +464,22 @@ class NhankhauController {
 			return;
 		}
 
-
 		// Không thể xóa một nhân khẩu đang là chủ hộ khẩu
-		// chưa làm api hộ khẩu
-
+		if (nhankhau.sohokhau != null){
+			let hokhau = await HoKhau.getHokhauBySoHokhau(nhankhau.sohokhau);
+			if (hokhau != null){
+				if (hokhau.idchuho == idnhankhau){
+					Response.response(res, Response.ResponseCode.ERROR, "cannot delete chuho", req.query, "Không xóa chủ hộ được");
+					return;
+				}
+			}
+		}
 
 		// delete nhankhau
+		let r1 = await Lichsu.delete({idnhankhau : idnhankhau});
+		let r2 = await Tamtrutamvang.deleteTamtrutamvangByIdnhankhau(idnhankhau);
 		result = await Nhankhau.delete({ id: idnhankhau });
-		if (result == null) {
+		if (result == null || r2 == null || r1 == null) {
 			Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Xóa nhân khẩu thất bại");
 			return;
 		}
