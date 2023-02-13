@@ -12,7 +12,8 @@ class Admin{
 	constructor(){}
 
 	async execute(req, res){
-		await this.fix4(req, res);
+		// await this.fix4(req, res);
+		res.json("Hello");
 	}
 
 	async fix1(req, res){
