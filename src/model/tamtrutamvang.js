@@ -191,6 +191,21 @@ class Tamtrutamvang {
         return result;
     }
 
+    static async deleteTamtrutamvangByIdnhankhau(idnhankhau) {
+        var connection = require('../index.js').connection;
+        var result;
+
+        try {
+            let query = `DELETE FROM tamtrutamvang WHERE idnhankhau = ${idnhankhau}`;
+            result = await connection.my_query(query);
+        } catch (err) {
+            console.log(err);
+            return null;
+        }
+
+        return result;
+    }
+
 }
 
 module.exports = { Tamtrutamvang }

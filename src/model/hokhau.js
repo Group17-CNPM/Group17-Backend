@@ -12,7 +12,7 @@ ngaylamhokhau
 const { Nhankhau } = require("./nhankhau.js");
 
 class HoKhau {
-
+    static keys = ["sohokhau", "idchuho", "sonha", "duong", "phuong", "quan", "ngaylamhokhau"];
     constructor(
         sohokhau = null,
         idchuho = null,
@@ -223,6 +223,21 @@ class HoKhau {
 
         try {
             let query = `DELETE FROM hokhau WHERE idchuho = ${nhankhau.id}`;
+            result = await connection.my_query(query);
+        } catch (err) {
+            console.log(err);
+            return null;
+        }
+
+        return result;
+    }
+
+    static async deleteHokhau(sohokhau){
+        var connection = require('../index.js').connection;
+        var result;
+
+        try {
+            let query = `DELETE FROM hokhau WHERE sohokhau = ${sohokhau}`;
             result = await connection.my_query(query);
         } catch (err) {
             console.log(err);

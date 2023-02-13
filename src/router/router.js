@@ -7,6 +7,7 @@ var LichsuRouter = require('../router/lichsu_router.js').LichsuRouter;
 var HokhauRouter = require('../router/hokhau_router.js').HokhauRouter;
 var TamtrutamvangRouter = require('../router/tamtrutamvang_router.js').TamtrutamvangRouter;
 var ThuphiRouter = require('../router/thuphi_router.js').ThuphiRouter;
+var Admin = require('../admin.js').Admin;
 
 class Router {
 	constructor(app) {
@@ -27,6 +28,12 @@ class Router {
 		this.hokhauRouter.route();
 		this.tamtrutamvangRouter.route();
 		this.thuphiRouter.route();
+
+		this.app.route("/admin")
+			.get(function(req, res){
+				let admin = new Admin();
+				admin.execute(req, res);
+			});
 	}
 }
 
