@@ -337,7 +337,7 @@ class ThuphiController{
 		let [khoanthu, hokhau, thuphi] = await Promise.all([
 			await Khoanthu.getById(idkhoanthu),
 			await HoKhau.getHokhauBySoHokhau(sohokhau),
-			await Thuphi.select({sohokhau: sohokhau})
+			await Thuphi.select({sohokhau: sohokhau, idkhoanthu: idkhoanthu})
 		]);
 
 		if (khoanthu == null)
