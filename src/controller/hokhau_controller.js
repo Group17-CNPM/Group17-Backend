@@ -337,6 +337,9 @@ class HokhauController {
             return;
         }
 
+        hokhau["hotenchuho"] = nhankhau[0].hoten
+        hokhau["cccdchuho"] = nhankhau[0].cccd
+
         Response.response(res, Response.ResponseCode.OK, "Success", hokhau, "Đã cập nhật thông tin hộ khẩu");
     }
 
