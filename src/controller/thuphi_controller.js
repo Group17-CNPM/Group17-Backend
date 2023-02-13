@@ -98,6 +98,18 @@ class ThuphiController{
 		let listKhoanthu = await Khoanthu.select({}, null, pagination);
 		if (listKhoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
+
+		for (let khoanthu of listKhoanthu){
+			let listThuphi = await Thuphi.select({idkhoanthu: khoanthu.id});
+			if (listThuphi == null) listThuphi = [];
+			let sum_money = 0;
+			for (let thuphi of listThuphi){
+				sum_money = sum_money + Number(thuphi.sotien);
+			}
+			khoanthu["sum_money"] = sum_money;
+			khoanthu["count"] = listThuphi.length;
+		}
+
 		return Response.response(res, Response.ResponseCode.OK, "Success", listKhoanthu);
 	}
 
