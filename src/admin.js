@@ -12,7 +12,7 @@ class Admin{
 	constructor(){}
 
 	async execute(req, res){
-		// await this.fix4(req, res);
+		// await this.fix5(req, res);
 		res.json("Hello");
 	}
 
@@ -163,6 +163,42 @@ class Admin{
 		return Response.response(res, Response.ResponseCode.OK, "DONE");
 	}
 
+
+	async fix4(req, res){
+		// check value is empty
+		let listNhankhau = await Nhankhau.select({});
+		if (listNhankhau == null) {
+			return Response.response(res, Response.ResponseCode.ERROR, "listNhankhau is null");
+		}
+
+		for (let nhankhau of listNhankhau){
+			for (let key of Nhankhau.keys()){
+				if (String(nhankhau[key]) == ''){
+					nhankhau[key] = null;
+				}
+			}
+			nhankhau.save();
+		}
+		
+		return Response.response(res, Response.ResponseCode.OK, "DONE");
+	}
+
+	async fix5(req, res){
+		// delete khoản thu empty
+		let listThuphi = await Thuphi.select({});
+		let listNotEmptyIdkhoanthu = listThuphi.map(thuphi => thuphi.idkhoanthu);
+		console.log("Test");
+		console.log(listNotEmptyIdkhoanthu);
+
+		let listKhoanthu = await Khoanthu.select({});
+		for (let khoanthu of listKhoanthu){
+			await khoanthu.save();
+			if (listNotEmptyIdkhoanthu.includes(khoanthu.id)) continue;
+			let random = Utils.random(0, 9);
+			if (random == 0) continue;
+			await Khoanthu.delete({id : khoanthu.id});
+		}
+	}
 }
 
 module.exports = { Admin };
