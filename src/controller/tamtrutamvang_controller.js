@@ -34,13 +34,13 @@ class TamtrutamvangController {
         let result = await LoginController.checkToken(req, res);
         if (!result) return;
 
-        let {start, length} = req.query;
-        if (start != null && !Utils.checkNumber(start)) 
+        let { start, length } = req.query;
+        if (start != null && !Utils.checkNumber(start))
             return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length)) 
+        if (length != null && !Utils.checkNumber(length))
             return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
         let pagination = null;
-        if (start != null && length != null){
+        if (start != null && length != null) {
             pagination = {
                 start: start,
                 length: length
@@ -53,6 +53,13 @@ class TamtrutamvangController {
         if (listTamtrutamvang == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
             return;
+        }
+
+        let nhankhau;
+        for (let i = 0; i < listTamtrutamvang.length; i++) {
+            nhankhau = await Nhankhau.select({ id: listTamtrutamvang[i].idnhankhau });
+            if (nhankhau == null) continue;
+            listTamtrutamvang[i]["nhankhau"] = nhankhau[0];
         }
 
         Response.response(res, Response.ResponseCode.OK, "Success", listTamtrutamvang);
@@ -118,6 +125,8 @@ class TamtrutamvangController {
             return;
         }
 
+        tamtrutamvang["nhankhau"] = nhankhau[0];
+
         Response.response(res, Response.ResponseCode.OK, "Success", tamtrutamvang);
     }
 
@@ -144,6 +153,13 @@ class TamtrutamvangController {
         if (listTamtrutamvang == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
             return;
+        }
+
+        let nhankhau;
+        for (let i = 0; i < listTamtrutamvang.length; i++) {
+            nhankhau = await Nhankhau.select({ id: listTamtrutamvang[i].idnhankhau });
+            if (nhankhau == null) continue;
+            listTamtrutamvang[i]["nhankhau"] = nhankhau[0];
         }
 
         Response.response(res, Response.ResponseCode.OK, "Success", listTamtrutamvang);
@@ -203,6 +219,7 @@ class TamtrutamvangController {
         }
 
         tamtrutamvang.id = result.insertId
+        tamtrutamvang["nhankhau"] = nhankhau[0];
 
         Response.response(res, Response.ResponseCode.OK, "Success", tamtrutamvang, "Đã thêm tạm trú tạm vắng");
     }
@@ -266,6 +283,8 @@ class TamtrutamvangController {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query, "Update tạm trú tạm vắng thất bại");
             return;
         }
+
+        tamtrutamvang["nhankhau"] = nhankhau[0];
 
         Response.response(res, Response.ResponseCode.OK, "Success", tamtrutamvang, "Đã cập nhật thông tin tạm trú tạm vắng");
     }
