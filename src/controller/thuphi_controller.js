@@ -5,6 +5,7 @@ let Utils = require('../utils/utils.js').Utils;
 let Khoanthu = require('../model/khoanthu.js').Khoanthu;
 let Thuphi = require('../model/thuphi.js').Thuphi;
 let HoKhau = require('../model/hokhau.js').HoKhau;
+let Nhankhau = require('../model/nhankhau.js').Nhankhau;
 
 class ThuphiController{
 	constructor(){}
@@ -600,6 +601,13 @@ class ThuphiController{
 		if (listHokhau == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 		
+        for (let i = 0; i < listHokhau.length; i++) {
+            let nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
+            if (nhankhau == null) continue;
+            listHokhau[i]["hotenchuho"] = nhankhau[0].hoten;
+            listHokhau[i]["cccdchuho"] = nhankhau[0].cccd;
+        }
+
 		return Response.response(res, Response.ResponseCode.OK, "Success", listHokhau);
 
 
