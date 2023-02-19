@@ -12,7 +12,7 @@ class Khoanthu {
     // static properties
     static table = "khoanthu";
     static array_key = [
-        "id", "ngaytao", "thoihan", "tenkhoanthu", "batbuoc", "ghichu"
+        "id", "ngaytao", "thoihan", "tenkhoanthu", "money", "batbuoc", "ghichu"
     ];
     // non static methods => Object
     constructor(khoanthu) {

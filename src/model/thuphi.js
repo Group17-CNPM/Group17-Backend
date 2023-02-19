@@ -1,4 +1,5 @@
 var Utils = require('../utils/utils.js').Utils;
+var Khoanthu = require('../model/khoanthu.js').Khoanthu;
 /*
 - id
 - idkhoanthu
@@ -196,6 +197,31 @@ class Thuphi {
         }
 
         return result;
+    }
+
+// business
+    static async getListNotComplete(idkhoanthu, pagination = null){
+        let paginationString = "", result;
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
+        let connection = require('../index.js').connection;
+
+        let query = `SELECT ${Thuphi.table}.* FROM ${Thuphi.table}, ${Khoanthu.table} 
+                        WHERE idkhoanthu = ${idkhoanthu} AND idkhoanthu = ${Khoanthu.table}.id
+                        AND sotien < ${Khoanthu.table}.money
+                        ${paginationString}`;
+        try {
+            result = await connection.my_query(query);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
+
+        let list = [];
+        result.forEach(function (element) {
+            list.push(Thuphi.from_json(element));
+        });
+
+        return list;
     }
 }
 
