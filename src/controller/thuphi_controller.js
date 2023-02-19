@@ -569,7 +569,7 @@ class ThuphiController{
 		length: "xxx"
 	}
 	*/
-	async getNotComleteListThuphi(req, res){
+	async getNotCompleteListThuphi(req, res){
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
