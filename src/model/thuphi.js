@@ -1,5 +1,6 @@
 var Utils = require('../utils/utils.js').Utils;
 var Khoanthu = require('../model/khoanthu.js').Khoanthu;
+var HoKhau = require('../model/hokhau.js').HoKhau;
 /*
 - id
 - idkhoanthu
@@ -205,10 +206,10 @@ class Thuphi {
         if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
         let connection = require('../index.js').connection;
 
-        let query = `SELECT ${Thuphi.table}.* FROM ${Thuphi.table}, ${Khoanthu.table} 
-                        WHERE idkhoanthu = ${idkhoanthu} AND idkhoanthu = ${Khoanthu.table}.id
-                        AND sotien < ${Khoanthu.table}.money
-                        ${paginationString}`;
+        let query = `SELECT * FROM hokhau WHERE hokhau.sohokhau NOT IN 
+                        (SELECT DISTINCT sohokhau FROM ${Thuphi.table} WHERE idkhoanthu = ${idkhoanthu})
+                    ${paginationString}`;
+
         try {
             result = await connection.my_query(query);
         } catch (e) {
@@ -218,7 +219,7 @@ class Thuphi {
 
         let list = [];
         result.forEach(function (element) {
-            list.push(Thuphi.from_json(element));
+            list.push(HoKhau.fromjson(element));
         });
 
         return list;

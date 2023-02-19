@@ -5,6 +5,7 @@ let Utils = require('../utils/utils.js').Utils;
 let Khoanthu = require('../model/khoanthu.js').Khoanthu;
 let Thuphi = require('../model/thuphi.js').Thuphi;
 let HoKhau = require('../model/hokhau.js').HoKhau;
+let Nhankhau = require('../model/nhankhau.js').Nhankhau;
 
 class ThuphiController{
 	constructor(){}
@@ -62,10 +63,6 @@ class ThuphiController{
 		let sum_money = 0;
 		for (let thuphi of listThuphi){
 			sum_money = sum_money + Number(thuphi.sotien);
-			thuphi.status = "Complete";
-			if (khoanthu.batbuoc == "1" && Number(thuphi.sotien) < Number(khoanthu.money)){
-				thuphi.status = "Not complete";
-			}
 		}
 
 		khoanthu.listThuphi = listThuphi;
@@ -361,6 +358,17 @@ class ThuphiController{
 		if (hokhau == null) 
 			return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);
 
+		if (khoanthu.batbuoc == "1"){
+			let danop = 0;
+			if (thuphi != null && thuphi.length > 0){
+				danop = Number(thuphi[0].sotien);
+				if (danop >= Number(khoanthu.money))
+					return Response.response(res, Response.ResponseCode.ERROR, "hokhau is complete this khoanthu", req.query, "Đã nộp đủ số tiền");
+			}
+			if (Number(sotien) + Number(danop) < Number(khoanthu.money))
+				return Response.response(res, Response.ResponseCode.ERROR, "not enough money", req.query, "Không đủ tiền");
+		}
+
 		if (thuphi != null && thuphi.length > 0){
 			thuphi = thuphi[0];
 			thuphi.sotien = Number(thuphi.sotien) + Number(sotien);
@@ -503,12 +511,6 @@ class ThuphiController{
 		if (thuphi == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Not exist thuphi", req.query, "Không tồn tại thuphi");
 
-		thuphi.status = "Complete";
-		let khoanthu = await Khoanthu.getById(thuphi.idkhoanthu);
-		if (khoanthu.batbuoc == "1" && Number(thuphi.sotien) < Number(khoanthu.money)){
-			thuphi.status = "Not complete";
-		}
-
 		return Response.response(res, Response.ResponseCode.OK, "Success", thuphi);
 	}
 
@@ -551,21 +553,13 @@ class ThuphiController{
 			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu is not existed", req.query);
 
 		let listThuphi = await Thuphi.select({idkhoanthu : idkhoanthu}, null, pagination);
-		if (khoanthu.batbuoc == "1"){
-			for (let thuphi of listThuphi){
-				thuphi.status = "Complete";
-				if (Number(thuphi.sotien) < Number(khoanthu.money)){
-					thuphi.status = "Not complete";
-				}
-			}
-		}
 		if (listThuphi == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 		return Response.response(res, Response.ResponseCode.OK, "Success", listThuphi);
 	}
 
 	/*
-	route: GET [domain]/getNotComleteListThuphi
+	route: GET [domain]/getNotComleteListHokhau
 	query: {
 		token: "xxx",
 		idkhoanthu : "xxx"
@@ -573,7 +567,7 @@ class ThuphiController{
 		length: "xxx"
 	}
 	*/
-	async getNotCompleteListThuphi(req, res){
+	async getNotCompleteListHokhau(req, res){
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
@@ -603,14 +597,18 @@ class ThuphiController{
 		if (khoanthu.batbuoc != "1")
 			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu khong bat buoc", req.query);
 
-		let listThuphi = await Thuphi.getListNotComplete(idkhoanthu, pagination);
-		if (listThuphi == null)
+		let listHokhau = await Thuphi.getListNotComplete(idkhoanthu, pagination);
+		if (listHokhau == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 		
-		for (let thuphi of listThuphi){
-			thuphi.status = "Not complete";
-		}
-		return Response.response(res, Response.ResponseCode.OK, "Success", listThuphi);
+        for (let i = 0; i < listHokhau.length; i++) {
+            let nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
+            if (nhankhau == null) continue;
+            listHokhau[i]["hotenchuho"] = nhankhau[0].hoten;
+            listHokhau[i]["cccdchuho"] = nhankhau[0].cccd;
+        }
+
+		return Response.response(res, Response.ResponseCode.OK, "Success", listHokhau);
 
 
 	}
