@@ -78,7 +78,6 @@ class LichsuController{
 
 		// nhân khẩu chưa trong hộ khẩu nào, thêm nhân khẩu vào hộ khẩu
 		let time = Utils.getStringFromUTCDate(new Date());
-		console.log(time);
 		result = await Lichsu.addNhankhauToHokhau(sohokhau, nhankhau.id, time);
 
 		// Thêm lỗi
