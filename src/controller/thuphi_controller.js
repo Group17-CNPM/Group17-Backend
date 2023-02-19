@@ -62,6 +62,10 @@ class ThuphiController{
 		let sum_money = 0;
 		for (let thuphi of listThuphi){
 			sum_money = sum_money + Number(thuphi.sotien);
+			thuphi.status = "Complete";
+			if (khoanthu.batbuoc == "1" && Number(thuphi.sotien) < Number(khoanthu.money)){
+				thuphi.status = "Not complete";
+			}
 		}
 
 		khoanthu.listThuphi = listThuphi;
