@@ -313,6 +313,10 @@ class NhankhauController {
 		}
 
 		nhankhau.id = result.insertId;
+		if (sohokhau != null) {
+			let time = Utils.getStringFromUTCDate(new Date());
+			await Lichsu.addNhankhauToHokhau(sohokhau, nhankhau.id, time);
+		}
 		Response.response(res, Response.ResponseCode.OK, "Success", nhankhau, "Đã thêm nhân khẩu");
 		// Response.response(res, Response.ResponseCode.OK, "Success", result, "Đã thêm nhân khẩu");
 	}
@@ -423,6 +427,20 @@ class NhankhauController {
 		if (ngaythemnhankhau != null && !Utils.checkDate(ngaythemnhankhau)) {
 			Response.response(res, Response.ResponseCode.ERROR, "ngaythemnhankhau is invalid", req.query);
 			return;
+		}
+
+		let time = Utils.getStringFromUTCDate(new Date());
+		if (old_nhankhau.sohokhau != sohokhau && sohokhau != null){
+			if (old_nhankhau.sohokhau != null){
+				// remove old hokhau
+				let old_hokhau = await HoKhau.getHokhauBySoHokhau(old_nhankhau.sohokhau);
+				if (old_hokhau.idchuho == idnhankhau){
+					return Response.response(res, Response.ResponseCode.ERROR, "nhankhau is chuho", req.query, "Nhân khẩu đang là chủ hộ của hộ khẩu cũ");
+				}			
+				await Lichsu.deleteNhankhauFromHokhau(old_nhankhau.sohokhau, nhankhau.id, time);
+			}
+			// add to new sohokhau
+			await Lichsu.addNhankhauToHokhau(sohokhau, nhankhau.id, time);
 		}
 
 		// add Nhankhau
