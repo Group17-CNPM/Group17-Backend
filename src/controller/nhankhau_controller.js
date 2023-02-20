@@ -48,20 +48,20 @@ class NhankhauController {
 			ngaydangkythuongtru, ngaythemnhankhau, ghichu, start, length
 		} = req.query;
 
-		if (start != null && !Utils.checkNumber(start)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
-        let pagination = null;
-        if (start != null && length != null){
-        	pagination = {
-        		start: start,
-        		length: length
-        	}
-        }
+		if (start != null && !Utils.checkNumber(start))
+			return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+		if (length != null && !Utils.checkNumber(length))
+			return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+		let pagination = null;
+		if (start != null && length != null) {
+			pagination = {
+				start: start,
+				length: length
+			}
+		}
 
 		var nhankhau = new Nhankhau({
-			idnhankhau: idnhankhau, hoten: hoten, ngaysinh: ngaysinh, gioitinh: gioitinh, quequan: quequan, dantoc: dantoc,
+			id: idnhankhau, hoten: hoten, ngaysinh: ngaysinh, gioitinh: gioitinh, quequan: quequan, dantoc: dantoc,
 			tongiao: tongiao, sohokhau: sohokhau, quanhevoichuho: quanhevoichuho,
 			cccd: cccd, capngay: ngaycap, noicap: noicap, nghenghiep: nghenghiep,
 			ngaydangkythuongtru: ngaydangkythuongtru, ngaythemnhankhau: ngaythemnhankhau, ghichu: ghichu
@@ -92,18 +92,18 @@ class NhankhauController {
 		let result = await LoginController.checkToken(req, res);
 		if (!result) return;
 
-		let {start, length} = req.query;
-		if (start != null && !Utils.checkNumber(start)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
-        let pagination = null;
-        if (start != null && length != null){
-        	pagination = {
-        		start: start,
-        		length: length
-        	}
-        }
+		let { start, length } = req.query;
+		if (start != null && !Utils.checkNumber(start))
+			return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+		if (length != null && !Utils.checkNumber(length))
+			return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+		let pagination = null;
+		if (start != null && length != null) {
+			pagination = {
+				start: start,
+				length: length
+			}
+		}
 
 		let listNhankhau = await Nhankhau.select({}, null, pagination);
 
@@ -254,7 +254,7 @@ class NhankhauController {
 
 		// check cccd is existed:
 		if (cccd != null) {
-			let nhankhau = await Nhankhau.select({cccd: cccd});
+			let nhankhau = await Nhankhau.select({ cccd: cccd });
 			if (nhankhau != null && nhankhau.length > 0) {
 				Response.response(res, Response.ResponseCode.ERROR, "cccd is existed", req.query);
 				return;
@@ -262,10 +262,10 @@ class NhankhauController {
 		}
 
 		// check sohokhau is existed:
-		if (sohokhau != null){
+		if (sohokhau != null) {
 			let hokhau = await HoKhau.getHokhauBySoHokhau(sohokhau);
 			if (hokhau == null) {
-				return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);	
+				return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);
 			}
 		}
 
@@ -387,10 +387,10 @@ class NhankhauController {
 		}
 
 		// check sohokhau is existed:
-		if (sohokhau != null){
+		if (sohokhau != null) {
 			let hokhau = await HoKhau.getHokhauBySoHokhau(sohokhau);
 			if (hokhau == null) {
-				return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);	
+				return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);
 			}
 		}
 
@@ -430,13 +430,13 @@ class NhankhauController {
 		}
 
 		let time = Utils.getStringFromUTCDate(new Date());
-		if (old_nhankhau.sohokhau != sohokhau && sohokhau != null){
-			if (old_nhankhau.sohokhau != null){
+		if (old_nhankhau.sohokhau != sohokhau && sohokhau != null) {
+			if (old_nhankhau.sohokhau != null) {
 				// remove old hokhau
 				let old_hokhau = await HoKhau.getHokhauBySoHokhau(old_nhankhau.sohokhau);
-				if (old_hokhau.idchuho == idnhankhau){
+				if (old_hokhau.idchuho == idnhankhau) {
 					return Response.response(res, Response.ResponseCode.ERROR, "nhankhau is chuho", req.query, "Nhân khẩu đang là chủ hộ của hộ khẩu cũ");
-				}			
+				}
 				await Lichsu.deleteNhankhauFromHokhau(old_nhankhau.sohokhau, nhankhau.id, time);
 			}
 			// add to new sohokhau
@@ -483,10 +483,10 @@ class NhankhauController {
 		}
 
 		// Không thể xóa một nhân khẩu đang là chủ hộ khẩu
-		if (nhankhau.sohokhau != null){
+		if (nhankhau.sohokhau != null) {
 			let hokhau = await HoKhau.getHokhauBySoHokhau(nhankhau.sohokhau);
-			if (hokhau != null){
-				if (hokhau.idchuho == idnhankhau){
+			if (hokhau != null) {
+				if (hokhau.idchuho == idnhankhau) {
 					Response.response(res, Response.ResponseCode.ERROR, "cannot delete chuho", req.query, "Không xóa chủ hộ được");
 					return;
 				}
@@ -494,7 +494,7 @@ class NhankhauController {
 		}
 
 		// delete nhankhau
-		let r1 = await Lichsu.delete({idnhankhau : idnhankhau});
+		let r1 = await Lichsu.delete({ idnhankhau: idnhankhau });
 		let r2 = await Tamtrutamvang.deleteTamtrutamvangByIdnhankhau(idnhankhau);
 		result = await Nhankhau.delete({ id: idnhankhau });
 		if (result == null || r2 == null || r1 == null) {

@@ -8,7 +8,7 @@ phuong
 quan
 ngaylamhokhau
 */
-
+var Utils = require('../utils/utils.js').Utils;
 const { Nhankhau } = require("./nhankhau.js");
 
 class HoKhau {
@@ -232,7 +232,7 @@ class HoKhau {
         return result;
     }
 
-    static async deleteHokhau(sohokhau){
+    static async deleteHokhau(sohokhau) {
         var connection = require('../index.js').connection;
         var result;
 
@@ -246,6 +246,43 @@ class HoKhau {
 
         return result;
     }
+
+    static async search(hokhau, keys = null, pagination = null) {
+        console.log(hokhau);
+        let connection = require('../index.js').connection;
+        let result, selectFields, whereParams;
+
+        if (keys == null || keys.length <= 0) {
+            selectFields = `*`
+        } else {
+            selectFields = keys.join(', ');
+        }
+
+        whereParams = Object.keys(hokhau)
+            .filter(key => hokhau[key])
+            .map(key => Utils.getSearchEquation(key, hokhau[key], false))
+            .join(' AND ');
+
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
+
+        let query = `SELECT ${selectFields} FROM hokhau WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ${paginationString};`;
+        // console.log(query)
+        try {
+            result = await connection.my_query(query);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
+
+        let list = [];
+        result.forEach(function (element) {
+            list.push(HoKhau.fromjson(element));
+        });
+
+        return list;
+    }
+
 }
 
 module.exports = { HoKhau }

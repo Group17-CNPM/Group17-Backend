@@ -61,6 +61,11 @@ class HokhauRouter {
                 let hokhauController = new HokhauController();
                 hokhauController.deleteHokhauByCccd(req, res);
             });
+        this.app.route("/searchHokhau")
+            .get(function (req, res) {
+                let hokhauController = new HokhauController();
+                hokhauController.searchHokhau(req, res);
+            });
     }
 }
 

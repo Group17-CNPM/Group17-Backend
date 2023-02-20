@@ -8,7 +8,9 @@ let Lichsu = require('../model/lichsu.js').Lichsu;
 let Utils = require('../utils/utils.js').Utils;
 
 class HokhauController {
-    constructor() { }
+    constructor() {
+
+    }
     checkDate(date) {
         if (date == null) return false;
         let dateRegex = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/;
@@ -478,6 +480,64 @@ class HokhauController {
         }
 
         Response.response(res, Response.ResponseCode.OK, "Success", req.query, "Đã xoá hộ khẩu");
+    }
+
+    async searchHokhau(req, res) {
+        // check token
+        let result = await LoginController.checkToken(req, res);
+        if (!result) return;
+
+        // get params
+        let {
+            token, cccdchuho, sonha, duong, phuong, quan, ngaylamhokhau, start, length
+        } = req.query;
+
+        let nhankhau;
+        if (cccdchuho != undefined) {
+            nhankhau = await Nhankhau.select({ cccd: cccdchuho });
+            if (nhankhau == null || nhankhau.length <= 0) {
+                Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd");
+                return;
+            }
+        } else {
+            nhankhau = null;
+        }
+
+        if (start != null && !Utils.checkNumber(start))
+            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+        if (length != null && !Utils.checkNumber(length))
+            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+        let pagination = null;
+        if (start != null && length != null) {
+            pagination = {
+                start: start,
+                length: length
+            }
+        }
+
+        var hokhau;
+        if (nhankhau != null) {
+            hokhau = new HoKhau(
+                null, nhankhau[0].id, sonha,
+                duong, phuong, quan, ngaylamhokhau
+            );
+        } else {
+            hokhau = new HoKhau(
+                null, null, sonha,
+                duong, phuong, quan, ngaylamhokhau
+            );
+        }
+
+        // search
+        let listHokhau = await HoKhau.search(hokhau, null, pagination)
+
+        if (listHokhau == null) {
+            Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
+            return;
+        }
+
+        Response.response(res, Response.ResponseCode.OK, "Success", listHokhau, "Thành công");
+
     }
 }
 
