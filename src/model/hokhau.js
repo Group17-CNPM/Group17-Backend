@@ -248,7 +248,7 @@ class HoKhau {
     }
 
     static async search(hokhau, keys = null, pagination = null) {
-        console.log(hokhau);
+        // console.log(hokhau);
         let connection = require('../index.js').connection;
         let result, selectFields, whereParams;
 

@@ -48,7 +48,7 @@ class HokhauController {
                 length: length
             }
         }
-        console.log(pagination);
+        // console.log(pagination);
 
         let listHokhau = await HoKhau.selectAll(pagination);
 
@@ -534,6 +534,13 @@ class HokhauController {
         if (listHokhau == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
             return;
+        }
+
+        for (let i = 0; i < listHokhau.length; i++) {
+            nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
+            if (nhankhau == null) continue;
+            listHokhau[i]["hotenchuho"] = nhankhau[0].hoten
+            listHokhau[i]["cccdchuho"] = nhankhau[0].cccd
         }
 
         Response.response(res, Response.ResponseCode.OK, "Success", listHokhau, "Thành công");
