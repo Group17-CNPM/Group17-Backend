@@ -489,24 +489,9 @@ class HokhauController {
 
         // get params
         let {
-            token, cccdchuho, sonha, duong, phuong, quan, ngaylamhokhau, start, length
+            token, hotenchuho, cccdchuho, sonha, duong, phuong, quan, ngaylamhokhau, start, length
         } = req.query;
 
-        let nhankhau;
-        if (cccdchuho != undefined) {
-            nhankhau = await Nhankhau.select({ cccd: cccdchuho });
-            if (nhankhau == null || nhankhau.length <= 0) {
-                Response.response(res, Response.ResponseCode.FILE_NOT_FOUND, "Not found", req.query, "Không tìm thấy cccd");
-                return;
-            }
-        } else {
-            nhankhau = null;
-        }
-
-        if (start != null && !Utils.checkNumber(start))
-            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length))
-            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
         let pagination = null;
         if (start != null && length != null) {
             pagination = {
@@ -515,27 +500,66 @@ class HokhauController {
             }
         }
 
-        var hokhau;
-        if (nhankhau != null) {
-            hokhau = new HoKhau(
-                null, nhankhau[0].id, sonha,
-                duong, phuong, quan, ngaylamhokhau
-            );
-        } else {
-            hokhau = new HoKhau(
-                null, null, sonha,
-                duong, phuong, quan, ngaylamhokhau
-            );
+        if (hotenchuho != undefined) {
+            let listHokhau = await HoKhau.selectAll(pagination);
+            let result = [];
+            if (listHokhau == null) {
+                Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
+                return;
+            }
+            let nhankhau;
+            for (let i = 0; i < listHokhau.length; i++) {
+                nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
+                if (nhankhau == null) continue;
+                if (nhankhau[0].hoten.toLowerCase().includes(hotenchuho.toLowerCase())) {
+                    listHokhau[i]["hotenchuho"] = nhankhau[0].hoten;
+                    listHokhau[i]["cccdchuho"] = nhankhau[0].cccd;
+                    result.push(listHokhau[i]);
+                }
+
+            }
+
+            Response.response(res, Response.ResponseCode.OK, "Success", result);
+            return;
         }
 
-        // search
+        // let nhankhau;
+        if (cccdchuho != undefined) {
+            let listHokhau = await HoKhau.selectAll(pagination);
+            let result = [];
+            if (listHokhau == null) {
+                Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
+                return;
+            }
+            let nhankhau;
+            for (let i = 0; i < listHokhau.length; i++) {
+                nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
+                if (nhankhau == null) continue;
+                if (nhankhau[0].cccd.toLowerCase().includes(cccdchuho.toLowerCase())) {
+                    listHokhau[i]["hotenchuho"] = nhankhau[0].hoten;
+                    listHokhau[i]["cccdchuho"] = nhankhau[0].cccd;
+                    result.push(listHokhau[i]);
+                }
+
+            }
+
+            Response.response(res, Response.ResponseCode.OK, "Success", result);
+            return;
+        }
+
+        var hokhau;
+        hokhau = new HoKhau(
+            null, null, sonha,
+            duong, phuong, quan, ngaylamhokhau
+        );
+
         let listHokhau = await HoKhau.search(hokhau, null, pagination)
 
         if (listHokhau == null) {
             Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
             return;
         }
-
+        let nhankhau;
         for (let i = 0; i < listHokhau.length; i++) {
             nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
             if (nhankhau == null) continue;

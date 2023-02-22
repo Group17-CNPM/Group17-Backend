@@ -43,6 +43,11 @@ class TamtrutamvangRouter {
                 let tamtrutamvangController = new TamtrutamvangController();
                 tamtrutamvangController.deleteTamtrutamvang(req, res);
             });
+        this.app.route("/searchTamtrutamvang")
+            .get(function (req, res) {
+                let tamtrutamvangController = new TamtrutamvangController();
+                tamtrutamvangController.searchTamtrutamvang(req, res);
+            });
     }
 }
 

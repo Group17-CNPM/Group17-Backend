@@ -324,6 +324,91 @@ class TamtrutamvangController {
 
         Response.response(res, Response.ResponseCode.OK, "Success", req.query, "Đã xoá tạm trú tạm vắng");
     }
+
+    async searchTamtrutamvang(req, res) {
+        // check token
+        let result = await LoginController.checkToken(req, res);
+        if (!result) return;
+
+        // get params
+        let {
+            token, hoten, cccd, id, idnhankhau, trangthai, diachitamtrutamvang, noidungdenghi, thoigian, start, length
+        } = req.query;
+
+        let pagination = null;
+        if (start != null && length != null) {
+            pagination = {
+                start: start,
+                length: length
+            }
+        }
+
+        if (hoten != undefined) {
+            let listTamtrutamvang = await Tamtrutamvang.selectAll(pagination);
+            let result = [];
+            if (listTamtrutamvang == null) {
+                Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
+                return;
+            }
+            let nhankhau;
+            for (let i = 0; i < listTamtrutamvang.length; i++) {
+                nhankhau = await Nhankhau.select({ id: listTamtrutamvang[i].idnhankhau });
+                if (nhankhau == null) continue;
+                if (nhankhau[0].hoten.toLowerCase().includes(hoten.toLowerCase())) {
+                    listTamtrutamvang[i]["nhankhau"] = nhankhau[0];
+                    result.push(listTamtrutamvang[i]);
+                }
+
+            }
+
+            Response.response(res, Response.ResponseCode.OK, "Success", result);
+            return;
+        }
+
+        if (cccd != undefined) {
+            let listTamtrutamvang = await Tamtrutamvang.selectAll(pagination);
+            let result = [];
+            if (listTamtrutamvang == null) {
+                Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
+                return;
+            }
+            let nhankhau;
+            for (let i = 0; i < listTamtrutamvang.length; i++) {
+                nhankhau = await Nhankhau.select({ id: listTamtrutamvang[i].idnhankhau });
+                if (nhankhau == null) continue;
+                if (nhankhau[0].cccd == null) continue;
+                if (nhankhau[0].cccd.toLowerCase().includes(cccd.toLowerCase())) {
+                    listTamtrutamvang[i]["nhankhau"] = nhankhau[0];
+                    result.push(listTamtrutamvang[i]);
+                }
+
+            }
+
+            Response.response(res, Response.ResponseCode.OK, "Success", result);
+            return;
+        }
+
+        var tamtrutamvang;
+        tamtrutamvang = new Tamtrutamvang(
+            id, idnhankhau, trangthai, diachitamtrutamvang, noidungdenghi, thoigian
+        );
+
+        let listTamtrutamvang = await Tamtrutamvang.search(tamtrutamvang, null, pagination)
+
+        if (listTamtrutamvang == null) {
+            Response.response(res, Response.ResponseCode.ERROR, "Failed", req.query);
+            return;
+        }
+        let nhankhau;
+        for (let i = 0; i < listTamtrutamvang.length; i++) {
+            nhankhau = await Nhankhau.select({ id: listTamtrutamvang[i].idnhankhau });
+            if (nhankhau == null) continue;
+            listTamtrutamvang[i]["nhankhau"] = nhankhau[0];
+        }
+
+        Response.response(res, Response.ResponseCode.OK, "Success", listTamtrutamvang, "Thành công");
+
+    }
 }
 
 module.exports = { TamtrutamvangController };

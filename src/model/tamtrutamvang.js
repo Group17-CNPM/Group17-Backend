@@ -1,4 +1,5 @@
 let Nhankhau = require("../model/nhankhau.js").Nhankhau;
+var Utils = require('../utils/utils.js').Utils;
 /*
 - id
 - idnhankhau
@@ -206,6 +207,41 @@ class Tamtrutamvang {
         return result;
     }
 
+    static async search(tamtrutamvang, keys = null, pagination = null) {
+        // console.log(tamtrutamvang);
+        let connection = require('../index.js').connection;
+        let result, selectFields, whereParams;
+
+        if (keys == null || keys.length <= 0) {
+            selectFields = `*`
+        } else {
+            selectFields = keys.join(', ');
+        }
+
+        whereParams = Object.keys(tamtrutamvang)
+            .filter(key => tamtrutamvang[key])
+            .map(key => Utils.getSearchEquation(key, tamtrutamvang[key], false))
+            .join(' AND ');
+
+        let paginationString = "";
+        if (pagination != null) paginationString = ` LIMIT ${pagination.length} OFFSET ${pagination.start} `;
+
+        let query = `SELECT ${selectFields} FROM tamtrutamvang WHERE TRUE ${whereParams != "" ? " AND " + whereParams : ""} ${paginationString};`;
+        // console.log(query)
+        try {
+            result = await connection.my_query(query);
+        } catch (e) {
+            console.log(e);
+            return null;
+        }
+
+        let list = [];
+        result.forEach(function (element) {
+            list.push(Tamtrutamvang.fromJson(element));
+        });
+
+        return list;
+    }
 }
 
 module.exports = { Tamtrutamvang }

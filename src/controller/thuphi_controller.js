@@ -7,9 +7,9 @@ let Thuphi = require('../model/thuphi.js').Thuphi;
 let HoKhau = require('../model/hokhau.js').HoKhau;
 let Nhankhau = require('../model/nhankhau.js').Nhankhau;
 
-class ThuphiController{
-	constructor(){}
-	
+class ThuphiController {
+	constructor() { }
+
 	/*
 	route: GET [domain]/getKhoanthu
 	query: {
@@ -17,13 +17,13 @@ class ThuphiController{
 		idkhoanthu: "xxx"
 	}
 	*/
-	async getKhoanthu(req, res){
+	async getKhoanthu(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
 		// check params
-		let {idkhoanthu} = req.query;
+		let { idkhoanthu } = req.query;
 		if (idkhoanthu == undefined)
 			return Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu id khoản thu");
 
@@ -42,26 +42,26 @@ class ThuphiController{
 		idkhoanthu: "xxx"
 	}
 	*/
-	async getDetailKhoanthu(req, res){
+	async getDetailKhoanthu(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
 		// check params
-		let {idkhoanthu} = req.query;
+		let { idkhoanthu } = req.query;
 		if (idkhoanthu == undefined)
 			return Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu id khoản thu");
 
 		let [khoanthu, listThuphi] = await Promise.all([
 			await Khoanthu.getById(idkhoanthu),
-			await Thuphi.select({idkhoanthu : idkhoanthu})
+			await Thuphi.select({ idkhoanthu: idkhoanthu })
 		]);
 
 		if (khoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Not exist khoanthu", req.query, "Không tồn tại khoanthu");
 
 		let sum_money = 0;
-		for (let thuphi of listThuphi){
+		for (let thuphi of listThuphi) {
 			sum_money = sum_money + Number(thuphi.sotien);
 		}
 
@@ -78,33 +78,33 @@ class ThuphiController{
 		length: "xxx"
 	}
 	*/
-	async getListKhoanthu(req, res){
+	async getListKhoanthu(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
-		let {start, length} = req.query;
-		if (start != null && !Utils.checkNumber(start)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
-        let pagination = null;
-        if (start != null && length != null){
-        	pagination = {
-        		start: start,
-        		length: length
-        	}
-        }
+		let { start, length } = req.query;
+		if (start != null && !Utils.checkNumber(start))
+			return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+		if (length != null && !Utils.checkNumber(length))
+			return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+		let pagination = null;
+		if (start != null && length != null) {
+			pagination = {
+				start: start,
+				length: length
+			}
+		}
 
 		let listKhoanthu = await Khoanthu.select({}, null, pagination);
 		if (listKhoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 
-		for (let khoanthu of listKhoanthu){
-			let listThuphi = await Thuphi.select({idkhoanthu: khoanthu.id});
+		for (let khoanthu of listKhoanthu) {
+			let listThuphi = await Thuphi.select({ idkhoanthu: khoanthu.id });
 			if (listThuphi == null) listThuphi = [];
 			let sum_money = 0;
-			for (let thuphi of listThuphi){
+			for (let thuphi of listThuphi) {
 				sum_money = sum_money + Number(thuphi.sotien);
 			}
 			khoanthu["sum_money"] = sum_money;
@@ -129,13 +129,13 @@ class ThuphiController{
 	options params: all except token
 	}
 	*/
-	async searchKhoanthu(req, res){
+	async searchKhoanthu(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
 		// check params:
-		let {idkhoanthu, ngaytao, thoihan, tenkhoanthu, batbuoc, ghichu} = req.query;
+		let { idkhoanthu, ngaytao, thoihan, tenkhoanthu, batbuoc, ghichu } = req.query;
 		if (batbuoc != null) batbuoc = String(batbuoc);
 
 		if (ngaytao != null && !Utils.checkDate(ngaytao))
@@ -145,26 +145,26 @@ class ThuphiController{
 		if (batbuoc != null && batbuoc != "0" && batbuoc != "1")
 			return Response.response(res, Response.ResponseCode.ERROR, "batbuoc is invalid", req.query);
 
-		let {start, length} = req.query;
-		if (start != null && !Utils.checkNumber(start)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
-        let pagination = null;
-        if (start != null && length != null){
-        	pagination = {
-        		start: start,
-        		length: length
-        	}
-        }
+		let { start, length } = req.query;
+		if (start != null && !Utils.checkNumber(start))
+			return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+		if (length != null && !Utils.checkNumber(length))
+			return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+		let pagination = null;
+		if (start != null && length != null) {
+			pagination = {
+				start: start,
+				length: length
+			}
+		}
 
 		let khoanthu = new Khoanthu({
 			id: idkhoanthu,
 			ngaytao: ngaytao,
 			thoihan: thoihan,
 			tenkhoanthu: tenkhoanthu,
-			batbuoc: batbuoc,
-			ghichu: ghichu	
+			batbuoc: parseInt(batbuoc),
+			ghichu: ghichu
 		});
 
 		let listKhoanthu = await Khoanthu.search(khoanthu, null, pagination);
@@ -185,7 +185,7 @@ class ThuphiController{
 	options params: ghichu, money(batbuoc)
 	}
 	*/
-	async addKhoanthu(req, res){
+	async addKhoanthu(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
@@ -217,9 +217,9 @@ class ThuphiController{
 			ngaytao: ngaytao,
 			thoihan: thoihan,
 			tenkhoanthu: tenkhoanthu,
-			batbuoc: batbuoc,
+			batbuoc: parseInt(batbuoc),
 			money: money,
-			ghichu: ghichu	
+			ghichu: ghichu
 		});
 		let result = await Khoanthu.insert(khoanthu);
 
@@ -227,8 +227,8 @@ class ThuphiController{
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 		khoanthu.id = result.insertId;
 		return Response.response(res, Response.ResponseCode.OK, "Success", khoanthu);
-	}	
-	
+	}
+
 	/*
 	route: GET [domain]/updateKhoanthu
 	query: {
@@ -243,13 +243,13 @@ class ThuphiController{
 	options params: all except token, idkhoanthu, money(batbuoc)
 	}
 	*/
-	async updateKhoanthu(req, res){
+	async updateKhoanthu(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
 		// check params:
-		let {idkhoanthu, ngaytao, thoihan, tenkhoanthu, batbuoc, money, ghichu} = req.query;
+		let { idkhoanthu, ngaytao, thoihan, tenkhoanthu, batbuoc, money, ghichu } = req.query;
 		if (idkhoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Lack of idkhoanthu", req.query);
 		if (batbuoc != null) batbuoc = String(batbuoc);
@@ -276,15 +276,24 @@ class ThuphiController{
 			ngaytao: ngaytao,
 			thoihan: thoihan,
 			tenkhoanthu: tenkhoanthu,
-			batbuoc: batbuoc,
+			batbuoc: parseInt(batbuoc),
 			money: money,
 			ghichu: ghichu
 		});
 		oldKhoanthu.copy_from(khoanthu);
 
-		let result = await Khoanthu.update(oldKhoanthu, {id: idkhoanthu});
+		let result = await Khoanthu.update(oldKhoanthu, { id: idkhoanthu });
 		if (result == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
+
+		let listThuphi = await Thuphi.select({ idkhoanthu: oldKhoanthu.id });
+		if (listThuphi == null) listThuphi = [];
+		let sum_money = 0;
+		for (let thuphi of listThuphi) {
+			sum_money = sum_money + Number(thuphi.sotien);
+		}
+		oldKhoanthu["sum_money"] = sum_money;
+		oldKhoanthu["count"] = listThuphi.length;
 		return Response.response(res, Response.ResponseCode.OK, "Success", oldKhoanthu);
 	}
 
@@ -295,13 +304,13 @@ class ThuphiController{
 		idkhoanthu : "xxx"
 	}
 	*/
-	async deleteKhoanthu(req, res){
+	async deleteKhoanthu(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
 		// check params:
-		let {idkhoanthu} = req.query;
+		let { idkhoanthu } = req.query;
 		if (idkhoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Lack of idkhoanthu", req.query);
 
@@ -311,10 +320,10 @@ class ThuphiController{
 			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu is not existed", req.query);
 
 		// delete
-		let result = await Khoanthu.delete({id: idkhoanthu});
+		let result = await Khoanthu.delete({ id: idkhoanthu });
 		if (result == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
-		await Thuphi.delete({idkhoanthu: idkhoanthu});
+		await Thuphi.delete({ idkhoanthu: idkhoanthu });
 		return Response.response(res, Response.ResponseCode.OK, "Success", khoanthu);
 	}
 
@@ -330,7 +339,7 @@ class ThuphiController{
 	options params: ghichu
 	}
 	*/
-	async addThuphi(req, res){
+	async addThuphi(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
@@ -350,17 +359,17 @@ class ThuphiController{
 		let [khoanthu, hokhau, thuphi] = await Promise.all([
 			await Khoanthu.getById(idkhoanthu),
 			await HoKhau.getHokhauBySoHokhau(sohokhau),
-			await Thuphi.select({sohokhau: sohokhau, idkhoanthu: idkhoanthu})
+			await Thuphi.select({ sohokhau: sohokhau, idkhoanthu: idkhoanthu })
 		]);
 
 		if (khoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu is not existed", req.query);
-		if (hokhau == null) 
+		if (hokhau == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);
 
-		if (khoanthu.batbuoc == "1"){
+		if (String(khoanthu.batbuoc) == "1") {
 			let danop = 0;
-			if (thuphi != null && thuphi.length > 0){
+			if (thuphi != null && thuphi.length > 0) {
 				danop = Number(thuphi[0].sotien);
 				if (danop >= Number(khoanthu.money))
 					return Response.response(res, Response.ResponseCode.ERROR, "hokhau is complete this khoanthu", req.query, "Đã nộp đủ số tiền");
@@ -369,7 +378,7 @@ class ThuphiController{
 				return Response.response(res, Response.ResponseCode.ERROR, "not enough money", req.query, "Không đủ tiền");
 		}
 
-		if (thuphi != null && thuphi.length > 0){
+		if (thuphi != null && thuphi.length > 0) {
 			thuphi = thuphi[0];
 			thuphi.sotien = Number(thuphi.sotien) + Number(sotien);
 			let result = await thuphi.save(thuphi);
@@ -411,7 +420,7 @@ class ThuphiController{
 	option params: all except token and idthuphi
 	}
 	*/
-	async updateThuphi(req, res){
+	async updateThuphi(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
@@ -421,16 +430,16 @@ class ThuphiController{
 		if (idkhoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Lack of idkhoanthu", req.query);
 
-		if (idkhoanthu != null){
+		if (idkhoanthu != null) {
 			let khoanthu = await Khoanthu.getById(idkhoanthu);
 			if (khoanthu == null)
-			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu is not existed", req.query);
+				return Response.response(res, Response.ResponseCode.ERROR, "khoanthu is not existed", req.query);
 		}
-		if (sohokhau != null){
+		if (sohokhau != null) {
 			if (!Utils.checkNumber(sohokhau))
 				return Response.response(res, Response.ResponseCode.ERROR, "sohokhau is invalid", req.query);
-			let hokhau = await HoKhau.getHokhauBySoHokhau(sohokhau);			
-			if (hokhau == null) 
+			let hokhau = await HoKhau.getHokhauBySoHokhau(sohokhau);
+			if (hokhau == null)
 				return Response.response(res, Response.ResponseCode.ERROR, "hokhau is not existed", req.query);
 		}
 		if (sotien != null && !Utils.checkNumber(sotien))
@@ -454,7 +463,7 @@ class ThuphiController{
 			ghichu: ghichu
 		});
 		old_thuphi.copy_from(thuphi);
-		let result = await Thuphi.update(old_thuphi, {id: idthuphi});
+		let result = await Thuphi.update(old_thuphi, { id: idthuphi });
 
 		if (result == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
@@ -468,7 +477,7 @@ class ThuphiController{
 		idthuphi: "xxx"
 	}
 	*/
-	async deleteThuphi(req, res){
+	async deleteThuphi(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
@@ -483,7 +492,7 @@ class ThuphiController{
 		if (thuphi == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "thuphi is not existed", req.query);
 
-		let result = await Thuphi.delete({id: idthuphi});
+		let result = await Thuphi.delete({ id: idthuphi });
 
 		if (result == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
@@ -497,13 +506,13 @@ class ThuphiController{
 		idthuphi: "xxx"
 	}
 	*/
-	async getThuphi(req, res){
+	async getThuphi(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
 		// check params
-		let {idthuphi} = req.query;
+		let { idthuphi } = req.query;
 		if (idthuphi == undefined)
 			return Response.response(res, Response.ResponseCode.ERROR, "Lack of params", req.query, "Thiếu id thu phí");
 
@@ -515,44 +524,44 @@ class ThuphiController{
 	}
 
 
-		/*
-	route: GET [domain]/getListThuphi
-	query: {
-		token: "xxx"
-		idkhoanthu: "xxx"
-		start: 1
-		lenth: 2
-	}
-	*/
-	async getListThuphi(req, res){
+	/*
+route: GET [domain]/getListThuphi
+query: {
+	token: "xxx"
+	idkhoanthu: "xxx"
+	start: 1
+	lenth: 2
+}
+*/
+	async getListThuphi(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
 		// check params:
-		let {idkhoanthu} = req.query;
+		let { idkhoanthu } = req.query;
 		if (idkhoanthu == undefined)
 			return Response.response(res, Response.ResponseCode.ERROR, "Lack of idkhoanthu", req.query);
 
-		let {start, length} = req.query;
-		if (start != null && !Utils.checkNumber(start)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
-        let pagination = null;
-        if (start != null && length != null){
-        	pagination = {
-        		start: start,
-        		length: length
-        	}
-        }
+		let { start, length } = req.query;
+		if (start != null && !Utils.checkNumber(start))
+			return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+		if (length != null && !Utils.checkNumber(length))
+			return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+		let pagination = null;
+		if (start != null && length != null) {
+			pagination = {
+				start: start,
+				length: length
+			}
+		}
 
 		// check if khoan thu is existed
 		let khoanthu = await Khoanthu.getById(idkhoanthu);
 		if (khoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu is not existed", req.query);
 
-		let listThuphi = await Thuphi.select({idkhoanthu : idkhoanthu}, null, pagination);
+		let listThuphi = await Thuphi.select({ idkhoanthu: idkhoanthu }, null, pagination);
 		if (listThuphi == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
 		return Response.response(res, Response.ResponseCode.OK, "Success", listThuphi);
@@ -567,46 +576,46 @@ class ThuphiController{
 		length: "xxx"
 	}
 	*/
-	async getNotCompleteListHokhau(req, res){
+	async getNotCompleteListHokhau(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
 
 		// check params:
-		let {idkhoanthu} = req.query;
+		let { idkhoanthu } = req.query;
 		if (idkhoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Lack of idkhoanthu", req.query);
 
-		let {start, length} = req.query;
-		if (start != null && !Utils.checkNumber(start)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
-        let pagination = null;
-        if (start != null && length != null){
-        	pagination = {
-        		start: start,
-        		length: length
-        	}
-        }
+		let { start, length } = req.query;
+		if (start != null && !Utils.checkNumber(start))
+			return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+		if (length != null && !Utils.checkNumber(length))
+			return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+		let pagination = null;
+		if (start != null && length != null) {
+			pagination = {
+				start: start,
+				length: length
+			}
+		}
 
 		// check khoan thu is existed
 		let khoanthu = await Khoanthu.getById(idkhoanthu);
 		if (khoanthu == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu is not existed", req.query);
-		if (khoanthu.batbuoc != "1")
+		if (String(khoanthu.batbuoc) != "1")
 			return Response.response(res, Response.ResponseCode.ERROR, "khoanthu khong bat buoc", req.query);
 
 		let listHokhau = await Thuphi.getListNotComplete(idkhoanthu, pagination);
 		if (listHokhau == null)
 			return Response.response(res, Response.ResponseCode.ERROR, "Query failed", req.query);
-		
-        for (let i = 0; i < listHokhau.length; i++) {
-            let nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
-            if (nhankhau == null) continue;
-            listHokhau[i]["hotenchuho"] = nhankhau[0].hoten;
-            listHokhau[i]["cccdchuho"] = nhankhau[0].cccd;
-        }
+
+		for (let i = 0; i < listHokhau.length; i++) {
+			let nhankhau = await Nhankhau.select({ id: listHokhau[i].idchuho });
+			if (nhankhau == null) continue;
+			listHokhau[i]["hotenchuho"] = nhankhau[0].hoten;
+			listHokhau[i]["cccdchuho"] = nhankhau[0].cccd;
+		}
 
 		return Response.response(res, Response.ResponseCode.OK, "Success", listHokhau);
 
@@ -629,7 +638,7 @@ class ThuphiController{
 	options params: all except token
 	}
 	*/
-	async searchThuphi(req, res){
+	async searchThuphi(req, res) {
 		// check token
 		let okay = await LoginController.checkToken(req, res);
 		if (!okay) return;
@@ -646,18 +655,18 @@ class ThuphiController{
 			ghichu: ghichu
 		});
 
-		let {start, length} = req.query;
-		if (start != null && !Utils.checkNumber(start)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
-        if (length != null && !Utils.checkNumber(length)) 
-            return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
-        let pagination = null;
-        if (start != null && length != null){
-        	pagination = {
-        		start: start,
-        		length: length
-        	}
-        }
+		let { start, length } = req.query;
+		if (start != null && !Utils.checkNumber(start))
+			return Response.response(res, Response.ResponseCode.ERROR, "start is invalid", req.query);
+		if (length != null && !Utils.checkNumber(length))
+			return Response.response(res, Response.ResponseCode.ERROR, "length is invalid", req.query);
+		let pagination = null;
+		if (start != null && length != null) {
+			pagination = {
+				start: start,
+				length: length
+			}
+		}
 
 		let listThuphi = await Thuphi.search(thuphi, null, pagination);
 		if (listThuphi == null)
