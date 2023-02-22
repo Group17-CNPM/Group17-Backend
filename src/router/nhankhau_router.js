@@ -19,6 +19,12 @@ class NhankhauRouter{
 				nhankhauController.getListNhankhau(req, res);
 			});
 
+		this.app.route("/postListNhankhau")
+			.post(function(req, res){
+				let nhankhauController = new NhankhauController();
+				nhankhauController.postListNhankhau(req, res);
+			});
+
 		this.app.route("/getListNhankhauBySoHoKhau")
 			.get(function(req, res){
 				let nhankhauController = new NhankhauController();

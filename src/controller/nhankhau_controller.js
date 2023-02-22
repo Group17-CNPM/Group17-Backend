@@ -10,6 +10,10 @@ let Lichsu = require('../model/lichsu.js').Lichsu;
 class NhankhauController {
 	constructor() { }
 
+
+	async postListNhankhau(req, res){
+		res.json(req.body);
+	}
 	/*
 	route: GET [domain]/searchNhankhau
 	query: {
