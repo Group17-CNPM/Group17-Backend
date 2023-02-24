@@ -434,8 +434,8 @@ class NhankhauController {
 		}
 
 		let time = Utils.getStringFromUTCDate(new Date());
-		if (old_nhankhau.sohokhau != sohokhau && sohokhau != null) {
-			if (old_nhankhau.sohokhau != null) {
+		if (old_nhankhau.sohokhau != sohokhau){
+			if (old_nhankhau.sohokhau != null){
 				// remove old hokhau
 				let old_hokhau = await HoKhau.getHokhauBySoHokhau(old_nhankhau.sohokhau);
 				if (old_hokhau.idchuho == idnhankhau) {
@@ -444,11 +444,13 @@ class NhankhauController {
 				await Lichsu.deleteNhankhauFromHokhau(old_nhankhau.sohokhau, nhankhau.id, time);
 			}
 			// add to new sohokhau
-			await Lichsu.addNhankhauToHokhau(sohokhau, nhankhau.id, time);
+			if (sohokhau != null)
+				await Lichsu.addNhankhauToHokhau(sohokhau, nhankhau.id, time);
 		}
 
 		// add Nhankhau
 		old_nhankhau.copy_from(nhankhau);
+		old_nhankhau.sohokhau = sohokhau;
 		result = await Nhankhau.update(old_nhankhau, { id: old_nhankhau.id });
 
 		if (result == null) {
